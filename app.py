@@ -94,7 +94,7 @@ log_file = LOGS / "app.log"
 @app.after_request
 def set_security_headers(response):
     # Content Security Policy – allow self and inline scripts (required for existing inline JS)
-    csp = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:;"
+    csp = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;"
     response.headers["Content-Security-Policy"] = csp
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
@@ -116,8 +116,12 @@ except OSError:
 app.logger.setLevel(logging.INFO)
 app.logger.info("Genartml Payroll startup")
 
+from werkzeug.exceptions import HTTPException
+
 @app.errorhandler(Exception)
 def handle_exception(e):
+    if isinstance(e, HTTPException):
+        return e
     app.logger.error(f"Unhandled Exception: {e}\n{traceback.format_exc()}")
     return jsonify(error="An internal server error occurred. Please check the logs."), 500
 
