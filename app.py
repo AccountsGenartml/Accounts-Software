@@ -21,16 +21,14 @@ from functools import wraps
 
 import secrets
 
-# ---- Security configuration ----
-# Cookie settings – HTTPOnly, SameSite, Secure (assumes HTTPS)
-# These protect the session cookie from XSS and CSRF.
-# Adjust SESSION_COOKIE_SECURE=False if you run locally without HTTPS.
-
-
-# ---- Security configuration ----
-# Cookie settings – HTTPOnly, SameSite, Secure (assumes HTTPS)
-# These protect the session cookie from XSS and CSRF.
-# Adjust SESSION_COOKIE_SECURE=False if you run locally without HTTPS.
+from flask import (
+    Flask,
+    request,
+    session,
+    jsonify,
+    redirect,
+    send_from_directory,
+)
 
 
 from engine import CompanyCalendar, Rules, run_payroll, PayrollError
@@ -48,26 +46,14 @@ UPLOADS.mkdir(exist_ok=True)
 OUT.mkdir(exist_ok=True)
 LOGS.mkdir(exist_ok=True)
 
-app = Flask(__name__, static_folder=str(HERE / "static"))
-# Ensure the app does not run in debug mode.
+app = Flask(__name__, static_folder=str(HERE / "public"))
 app.debug = False
-# Session cookie hardening
 app.config.update({
     "SESSION_COOKIE_HTTPONLY": True,
     "SESSION_COOKIE_SAMESITE": "Lax",
-    "SESSION_COOKIE_SECURE": True,  # Set to True in production (HTTPS)
+    "SESSION_COOKIE_SECURE": True,
     "PREFERRED_URL_SCHEME": "https",
     "MAX_CONTENT_LENGTH": 16 * 1024 * 1024  # 16 MB upload limit
-})
-
-# Ensure the app does not run in debug mode.
-app.debug = False
-# Session cookie hardening
-app.config.update({
-    "SESSION_COOKIE_HTTPONLY": True,
-    "SESSION_COOKIE_SAMESITE": "Lax",
-    "SESSION_COOKIE_SECURE": True,  # Set to True in production (HTTPS)
-    "PREFERRED_URL_SCHEME": "https"
 })
 app.secret_key = os.environ.get("SECRET_KEY", "genartml-payroll-secret-2026")
 
