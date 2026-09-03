@@ -175,6 +175,15 @@ def login_page():
         return html_path.read_text(), 200, {"Content-Type": "text/html; charset=utf-8"}
     return "Login page not found", 404
 
+@app.get("/favicon.ico")
+def favicon():
+    # Check if a real favicon exists in the static dir
+    ico = STATIC_DIR / "favicon.ico"
+    if ico.exists():
+        return send_from_directory(str(STATIC_DIR), "favicon.ico")
+    # Return empty 204 so the browser stops retrying
+    return "", 204
+
 @app.get("/")
 def index():
     if not session.get("logged_in"):
