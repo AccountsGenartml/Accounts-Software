@@ -2,15 +2,12 @@ import os
 import sys
 from pathlib import Path
 
-# Make the project root importable so we can import the original Flask app
+# Make the project root importable
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-sys.path.append(str(PROJECT_ROOT))
+sys.path.insert(0, str(PROJECT_ROOT))
 
-# Import the existing Flask application (defined in app.py at the repo root)
-from app import app as flask_app  # original Flask app
+# Import the Flask application from the root app.py
+from app import app as flask_app
 
-# Ensure static assets are served from the `public` folder (Vercel serves files from the repo root)
-flask_app.static_folder = str(PROJECT_ROOT / "public")
-
-# Export the Flask app as the entrypoint Vercel expects
+# Export as `app` — the name Vercel looks for
 app = flask_app

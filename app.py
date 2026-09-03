@@ -56,7 +56,12 @@ try:
 except OSError:
     pass
 
-app = Flask(__name__, static_folder=str(HERE / "public"))
+# Determine static folder — check both 'public' and 'static' (for Vercel vs local)
+STATIC_DIR = HERE / "public"
+if not STATIC_DIR.exists():
+    STATIC_DIR = HERE / "static"
+
+app = Flask(__name__, static_folder=str(STATIC_DIR))
 app.debug = False
 app.config.update({
     "SESSION_COOKIE_HTTPONLY": True,
@@ -165,18 +170,24 @@ def logout():
 
 @app.get("/login")
 def login_page():
-    return send_from_directory(app.static_folder, "login.html")
+    html_path = STATIC_DIR / "login.html"
+    if html_path.exists():
+        return html_path.read_text(), 200, {"Content-Type": "text/html; charset=utf-8"}
+    return "Login page not found", 404
 
 @app.get("/")
 def index():
     if not session.get("logged_in"):
         return redirect("/login")
-    return send_from_directory(app.static_folder, "index.html")
+    html_path = STATIC_DIR / "index.html"
+    if html_path.exists():
+        return html_path.read_text(), 200, {"Content-Type": "text/html; charset=utf-8"}
+    return "Page not found", 404
 
 
 @app.get("/static/<path:f>")
 def static_files(f):
-    return send_from_directory(app.static_folder, f)
+    return send_from_directory(str(STATIC_DIR), f)
 
 
 # ------------------------------------------------------------------ config
