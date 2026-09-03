@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Login - Genartml Payroll</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    :root {
+      --bg: #09090b;
+      --card: rgba(24, 24, 27, 0.7);
+      --border: rgba(255, 255, 255, 0.1);
+      --ink: #fafafa;
+      --ink-2: #a1a1aa;
+      --primary: #fff;
+      --primary-ink: #000;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(255,255,255,0.04), transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(255,255,255,0.04), transparent 25%);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 380px;
+      padding: 32px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+    
+    .logo {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .logo h1 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    
+    .fld {
+      margin-bottom: 20px;
+    }
+    
+    .fld label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--ink-2);
+      margin-bottom: 8px;
+    }
+    
+    .fld input {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      color: var(--ink);
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      transition: border-color 0.2s;
+    }
+    
+    .fld input:focus {
+      outline: none;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .btn {
+      width: 100%;
+      background: var(--primary);
+      color: var(--primary-ink);
+      border: none;
+      padding: 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.1s, opacity 0.2s;
+      margin-top: 8px;
+    }
+    
+    .btn:hover {
+      opacity: 0.9;
+    }
+    
+    .btn:active {
+      transform: scale(0.98);
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    #err {
+      color: #ef4444;
+      font-size: 13px;
+      text-align: center;
+      margin-top: 16px;
+      min-height: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <img src="/static/assets/logo.png" alt="Logo" style="width:48px;height:48px;object-fit:contain;margin-bottom:16px;border-radius:8px;">
+  
+  <form id="frm">
+    <div class="fld">
+      <label>Username</label>
+      <input type="text" id="u" placeholder="Enter your username" required autofocus>
+    </div>
+    <div class="fld">
+      <label>Password</label>
+      <input type="password" id="p" placeholder="••••••••" required>
+    </div>
+    <button type="submit" class="btn" id="sb">Sign In</button>
+  </form>
+  
+  <div id="err"></div>
+</div>
+
+<script>
+  const frm = document.getElementById('frm');
+  const err = document.getElementById('err');
+  const sb = document.getElementById('sb');
+  
+  frm.onsubmit = async (e) => {
+    e.preventDefault();
+    err.textContent = '';
+    sb.disabled = true;
+    sb.textContent = 'Signing in...';
+    
+    try {
+      const res = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          u: document.getElementById('u').value,
+          p: document.getElementById('p').value
+        })
+      });
+      
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        window.location.href = '/';
+      } else {
+        err.textContent = data.error || 'Invalid credentials';
+        sb.disabled = false;
+        sb.textContent = 'Sign In';
+      }
+    } catch (error) {
+      err.textContent = 'Connection failed';
+      sb.disabled = false;
+      sb.textContent = 'Sign In';
+    }
+  };
+</script>
+
+</body>
+</html>

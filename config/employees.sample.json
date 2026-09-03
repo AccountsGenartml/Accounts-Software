@@ -1,0 +1,43 @@
+[
+  { "name": "Parthdeepsinh Jadeja", "emp_id": "GEN-0002", "aliases": [],
+    "designation": "Chief Operating Officer", "department": "Management",
+    "date_of_joining": "2025-09-15", "pan": "CXPPJ3615L",
+    "bank_name": "State Bank of India", "bank_ac": "XXXX XXXX 9743", "ifsc": "SBIN0013169",
+    "ctc_monthly": 30000, "leave_opening": { "CL": 1, "SL": 1, "EL": 0 } },
+
+  { "name": "Sandeep Bhagat", "emp_id": "GEN-0003", "aliases": [],
+    "designation": "Chief Technical Officer", "department": "Management",
+    "date_of_joining": "2025-11-11", "pan": "FJTPB3002G",
+    "bank_name": "Kotak Mahindra", "bank_ac": "XXXX XXXX 0809", "ifsc": "KKBK0003007",
+    "ctc_monthly": 30000, "leave_opening": { "CL": 0, "SL": 2, "EL": 0 } },
+
+  { "name": "Shubham Panchal", "emp_id": "GEN-0004", "aliases": [],
+    "designation": "Engineer", "department": "Engineering",
+    "exit_date": "2026-08-14", "pan": "ITKPP8647B",
+    "ctc_monthly": 18000, "leave_opening": { "CL": 0, "SL": 1, "EL": 0 } },
+
+  { "name": "Shubham Shah", "emp_id": "GEN-0005", "aliases": [],
+    "designation": "Frontend Developer", "department": "Engineering",
+    "date_of_joining": "2025-12-01", "pan": "OKDPS2102E",
+    "bank_name": "The Kalupur Commercial Co-op. Bank", "bank_ac": "XXXX XXXX 2157",
+    "ifsc": "KCCB0USM006",
+    "ctc_monthly": 25000, "leave_opening": { "CL": 0, "SL": 1, "EL": 0 } },
+
+  { "name": "Prashant Songara", "emp_id": "GEN-0006", "aliases": ["Prashant Songagra"],
+    "designation": "Full Stack Developer", "department": "Engineering",
+    "date_of_joining": "2026-01-05", "pan": "QEBPS4241J",
+    "bank_name": "Bank Of Baroda", "bank_ac": "XXXX XXXX 6193", "ifsc": "BARB0ASARWA",
+    "ctc_monthly": 25000, "leave_opening": { "CL": 0, "SL": 1, "EL": 1 } },
+
+  { "name": "Preet Singha", "emp_id": "GEN-0007", "aliases": [],
+    "designation": "Full-Stack Developer", "department": "Engineering",
+    "date_of_joining": "2026-01-05", "pan": "PLTPS9193F",
+    "bank_name": "Kotak Mahindra", "bank_ac": "XXXX XXXX 2993", "ifsc": "KKBK0002576",
+    "ctc_monthly": 25000, "leave_opening": { "CL": 0, "SL": 2, "EL": 0 } },
+
+  { "name": "Parva Kumar", "emp_id": "GEN-0009", "aliases": [],
+    "designation": "AI/ML Developer", "department": "Engineering",
+    "date_of_joining": "2026-06-08", "pan": "MFSPK4708J",
+    "bank_name": "Bank Of Baroda", "bank_ac": "67750100023743", "ifsc": "BARB0VJBHAV",
+    "ctc_monthly": 18000, "leave_opening": { "CL": 0, "SL": 0, "EL": 0 } }
+]

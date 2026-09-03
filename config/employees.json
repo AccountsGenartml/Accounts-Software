@@ -1,0 +1,127 @@
+[
+  {
+    "aliases": [],
+    "bank_ac": "XXXX XXXX 9743",
+    "bank_name": "State Bank of India",
+    "ctc_monthly": 30000,
+    "date_of_joining": "2025-09-15",
+    "department": "Management",
+    "designation": "Chief Operating Officer",
+    "emp_id": "GEN-0002",
+    "ifsc": "SBIN0013169",
+    "leave_opening": {
+      "CL": 1,
+      "EL": 0,
+      "SL": 1
+    },
+    "name": "Parthdeepsinh Jadeja",
+    "pan": "CXPPJ3615L"
+  },
+  {
+    "aliases": [],
+    "bank_ac": "XXXX XXXX 0809",
+    "bank_name": "Kotak Mahindra",
+    "ctc_monthly": 30000,
+    "date_of_joining": "2025-11-11",
+    "department": "Management",
+    "designation": "Chief Technical Officer",
+    "emp_id": "GEN-0003",
+    "ifsc": "KKBK0003007",
+    "leave_opening": {
+      "CL": 0,
+      "EL": 0,
+      "SL": 2
+    },
+    "name": "Sandeep Bhagat",
+    "pan": "FJTPB3002G"
+  },
+  {
+    "aliases": [],
+    "ctc_monthly": 18000,
+    "department": "Engineering",
+    "designation": "Engineer",
+    "emp_id": "GEN-0004",
+    "exit_date": "2026-08-14",
+    "leave_opening": {
+      "CL": 0,
+      "EL": 0,
+      "SL": 1
+    },
+    "name": "Shubham Panchal",
+    "pan": "ITKPP8647B"
+  },
+  {
+    "aliases": [],
+    "bank_ac": "XXXX XXXX 2157",
+    "bank_name": "The Kalupur Commercial Co-op. Bank",
+    "ctc_monthly": 25000,
+    "date_of_joining": "2025-12-01",
+    "department": "Engineering",
+    "designation": "Frontend Developer",
+    "emp_id": "GEN-0005",
+    "ifsc": "KCCB0USM006",
+    "leave_opening": {
+      "CL": 0,
+      "EL": 0,
+      "SL": 1
+    },
+    "name": "Shubham Shah",
+    "pan": "OKDPS2102E"
+  },
+  {
+    "aliases": [
+      "Prashant Songagra"
+    ],
+    "bank_ac": "XXXX XXXX 6193",
+    "bank_name": "Bank Of Baroda",
+    "ctc_monthly": 25000,
+    "date_of_joining": "2026-01-05",
+    "department": "Engineering",
+    "designation": "Full Stack Developer",
+    "emp_id": "GEN-0006",
+    "ifsc": "BARB0ASARWA",
+    "leave_opening": {
+      "CL": 0,
+      "EL": 1,
+      "SL": 1
+    },
+    "name": "Prashant Songara",
+    "pan": "QEBPS4241J"
+  },
+  {
+    "aliases": [],
+    "bank_ac": "XXXX XXXX 2993",
+    "bank_name": "Kotak Mahindra",
+    "ctc_monthly": 25000,
+    "date_of_joining": "2026-01-05",
+    "department": "Engineering",
+    "designation": "Full-Stack Developer",
+    "emp_id": "GEN-0007",
+    "ifsc": "KKBK0002576",
+    "leave_opening": {
+      "CL": 0,
+      "EL": 0,
+      "SL": 2
+    },
+    "name": "Preet Singha",
+    "pan": "PLTPS9193F"
+  },
+  {
+    "aliases": [],
+    "bank_ac": "67750100023743",
+    "bank_name": "Bank Of Baroda",
+    "ctc_monthly": 18000,
+    "date_of_joining": "2026-06-08",
+    "department": "Engineering",
+    "designation": "AI/ML Developer",
+    "emp_id": "GEN-0009",
+    "ifsc": "BARB0VJBHAV",
+    "leave_opening": {
+      "CL": 0,
+      "EL": 0,
+      "SL": 0
+    },
+    "name": "Parva Kumar",
+    "pan": "MFSPK4708J"
+  }
+]

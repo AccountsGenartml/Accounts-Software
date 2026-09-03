@@ -1,0 +1,39 @@
+{
+  "_comment": "Source: Genartml Holiday & Leave Calendar 2026, Version 1.0, issued Dec 2025. Work week Mon-Fri; Sat/Sun are weekly offs. A holiday falling on a weekend gets no compensatory day (Section C), so it is NOT double-counted in working days.",
+  "year": 2026,
+  "work_week": ["Mon", "Tue", "Wed", "Thu", "Fri"],
+  "shift": { "start": "09:00", "end": "18:00", "paid_hours": 8, "grace_minutes": 15 },
+  "public_holidays": [
+    { "date": "2026-01-14", "name": "Uttarayan (Makar Sankranti)" },
+    { "date": "2026-01-26", "name": "Republic Day" },
+    { "date": "2026-03-04", "name": "Holi / Dhuleti" },
+    { "date": "2026-03-21", "name": "Id-ul-Fitr (Ramzan Eid)" },
+    { "date": "2026-03-26", "name": "Ram Navami" },
+    { "date": "2026-04-03", "name": "Good Friday" },
+    { "date": "2026-08-15", "name": "Independence Day" },
+    { "date": "2026-08-28", "name": "Raksha Bandhan" },
+    { "date": "2026-09-04", "name": "Janmashtami" },
+    { "date": "2026-10-02", "name": "Gandhi Jayanti" },
+    { "date": "2026-10-20", "name": "Dussehra (Vijayadashami)" },
+    { "date": "2026-11-08", "name": "Diwali (Deepavali)" },
+    { "date": "2026-11-10", "name": "Gujarati New Year (Bestu Varsh)" },
+    { "date": "2026-11-11", "name": "Bhai Beej" },
+    { "date": "2026-12-25", "name": "Christmas" }
+  ],
+  "company_shutdown": [
+    { "from": "2026-11-09", "to": "2026-11-13", "name": "Diwali & New Year festive shutdown" }
+  ],
+  "optional_holidays_allowed_per_employee": 2,
+  "optional_holidays": [
+    { "date": "2026-02-15", "name": "Maha Shivratri" },
+    { "date": "2026-03-31", "name": "Mahavir Jayanti" },
+    { "date": "2026-04-19", "name": "Akshaya Tritiya / Parshuram Jayanti" },
+    { "date": "2026-05-27", "name": "Id-ul-Zuha (Bakri Eid)" },
+    { "date": "2026-06-26", "name": "Muharram" },
+    { "date": "2026-08-26", "name": "Id-e-Milad" },
+    { "date": "2026-10-05", "name": "Navratri (First Nortu)" },
+    { "date": "2026-10-31", "name": "Sardar Patel Jayanti" },
+    { "date": "2026-11-24", "name": "Guru Nanak Jayanti" }
+  ],
+  "leave_entitlement": { "EL": 12, "CL": 6, "SL": 6 }
+}

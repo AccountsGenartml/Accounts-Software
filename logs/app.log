@@ -1,0 +1,220 @@
+2026-09-03 23:52:26,677 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:48]
+2026-09-03 23:52:26,677 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:48]
+2026-09-03 23:52:26,691 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:48]
+2026-09-03 23:52:26,769 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:48]
+2026-09-04 00:03:28,664 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:66]
+2026-09-04 00:03:28,664 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:66]
+2026-09-04 00:03:28,694 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:66]
+2026-09-04 00:03:28,758 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:66]
+2026-09-04 00:07:32,148 ERROR: Unhandled Exception: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+Traceback (most recent call last):
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 278, in <lambda>
+    view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 326, in send_static_file
+    return send_from_directory(
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/helpers.py", line 572, in send_from_directory
+    return werkzeug.utils.send_from_directory(  # type: ignore[return-value]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/werkzeug/utils.py", line 568, in send_from_directory
+    raise NotFound()
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+ [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:70]
+2026-09-04 00:13:34,160 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:66]
+2026-09-04 00:13:34,161 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:66]
+2026-09-04 00:13:34,161 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:66]
+2026-09-04 00:13:34,165 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:66]
+2026-09-04 00:17:04,086 ERROR: Unhandled Exception: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+Traceback (most recent call last):
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 278, in <lambda>
+    view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 326, in send_static_file
+    return send_from_directory(
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/helpers.py", line 572, in send_from_directory
+    return werkzeug.utils.send_from_directory(  # type: ignore[return-value]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/werkzeug/utils.py", line 568, in send_from_directory
+    raise NotFound()
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+ [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:70]
+2026-09-04 00:17:04,674 ERROR: Unhandled Exception: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+Traceback (most recent call last):
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 278, in <lambda>
+    view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 326, in send_static_file
+    return send_from_directory(
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/helpers.py", line 572, in send_from_directory
+    return werkzeug.utils.send_from_directory(  # type: ignore[return-value]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/werkzeug/utils.py", line 568, in send_from_directory
+    raise NotFound()
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+ [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:70]
+2026-09-04 00:17:04,959 ERROR: Unhandled Exception: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+Traceback (most recent call last):
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 278, in <lambda>
+    view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 326, in send_static_file
+    return send_from_directory(
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/helpers.py", line 572, in send_from_directory
+    return werkzeug.utils.send_from_directory(  # type: ignore[return-value]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/werkzeug/utils.py", line 568, in send_from_directory
+    raise NotFound()
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+ [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:70]
+2026-09-04 00:17:05,109 ERROR: Unhandled Exception: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+Traceback (most recent call last):
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 278, in <lambda>
+    view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 326, in send_static_file
+    return send_from_directory(
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/helpers.py", line 572, in send_from_directory
+    return werkzeug.utils.send_from_directory(  # type: ignore[return-value]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/werkzeug/utils.py", line 568, in send_from_directory
+    raise NotFound()
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+ [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:70]
+2026-09-04 00:17:05,277 ERROR: Unhandled Exception: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+Traceback (most recent call last):
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 278, in <lambda>
+    view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 326, in send_static_file
+    return send_from_directory(
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/helpers.py", line 572, in send_from_directory
+    return werkzeug.utils.send_from_directory(  # type: ignore[return-value]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/werkzeug/utils.py", line 568, in send_from_directory
+    raise NotFound()
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+ [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:70]
+2026-09-04 00:17:05,447 ERROR: Unhandled Exception: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+Traceback (most recent call last):
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 278, in <lambda>
+    view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 326, in send_static_file
+    return send_from_directory(
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/helpers.py", line 572, in send_from_directory
+    return werkzeug.utils.send_from_directory(  # type: ignore[return-value]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/werkzeug/utils.py", line 568, in send_from_directory
+    raise NotFound()
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+ [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:70]
+2026-09-04 00:17:18,728 ERROR: Unhandled Exception: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+Traceback (most recent call last):
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 278, in <lambda>
+    view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 326, in send_static_file
+    return send_from_directory(
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/helpers.py", line 572, in send_from_directory
+    return werkzeug.utils.send_from_directory(  # type: ignore[return-value]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/werkzeug/utils.py", line 568, in send_from_directory
+    raise NotFound()
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+ [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:70]
+2026-09-04 00:17:29,534 ERROR: Unhandled Exception: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+Traceback (most recent call last):
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 278, in <lambda>
+    view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 326, in send_static_file
+    return send_from_directory(
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/helpers.py", line 572, in send_from_directory
+    return werkzeug.utils.send_from_directory(  # type: ignore[return-value]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/werkzeug/utils.py", line 568, in send_from_directory
+    raise NotFound()
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+ [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:70]
+2026-09-04 00:17:30,220 ERROR: Unhandled Exception: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+Traceback (most recent call last):
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 278, in <lambda>
+    view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 326, in send_static_file
+    return send_from_directory(
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/helpers.py", line 572, in send_from_directory
+    return werkzeug.utils.send_from_directory(  # type: ignore[return-value]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/werkzeug/utils.py", line 568, in send_from_directory
+    raise NotFound()
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+ [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:70]
+2026-09-04 00:17:30,396 ERROR: Unhandled Exception: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+Traceback (most recent call last):
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 278, in <lambda>
+    view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 326, in send_static_file
+    return send_from_directory(
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/helpers.py", line 572, in send_from_directory
+    return werkzeug.utils.send_from_directory(  # type: ignore[return-value]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/werkzeug/utils.py", line 568, in send_from_directory
+    raise NotFound()
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+ [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:70]
+2026-09-04 00:17:30,511 ERROR: Unhandled Exception: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+Traceback (most recent call last):
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 278, in <lambda>
+    view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 326, in send_static_file
+    return send_from_directory(
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/helpers.py", line 572, in send_from_directory
+    return werkzeug.utils.send_from_directory(  # type: ignore[return-value]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/werkzeug/utils.py", line 568, in send_from_directory
+    raise NotFound()
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+ [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:70]
+2026-09-04 00:17:30,610 ERROR: Unhandled Exception: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+Traceback (most recent call last):
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 278, in <lambda>
+    view_func=lambda **kw: self_ref().send_static_file(**kw),  # type: ignore
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 326, in send_static_file
+    return send_from_directory(
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/helpers.py", line 572, in send_from_directory
+    return werkzeug.utils.send_from_directory(  # type: ignore[return-value]
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/werkzeug/utils.py", line 568, in send_from_directory
+    raise NotFound()
+werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
+ [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:70]

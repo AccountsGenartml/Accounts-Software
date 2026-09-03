@@ -1,0 +1,69 @@
+{
+  "_comment": "Genartml payroll rules. Every rate lives here. Never hardcode these in code.",
+
+  "ctc_split": {
+    "base_pct": 0.70,
+    "incentive_pct": 0.20,
+    "incentive_default_payout": 0.50,
+    "allowance_pct": 0.10
+  },
+
+  "overtime": {
+    "paid_hours_per_day": 8,
+    "multiplier": 2.0,
+    "rounding": "none",
+    "_rounding_options": "none | floor_30min  -- never 'round' or 'ceil', those can pay above what was approved"
+  },
+
+  "professional_tax_gujarat": [
+    { "upto": 5999.99, "tax": 0 },
+    { "upto": 8999.99, "tax": 80 },
+    { "upto": 11999.99, "tax": 150 },
+    { "upto": null, "tax": 200 }
+  ],
+
+  "pay_factors": {
+    "Office":                                   { "factor": 1.00, "counts_working_day": true },
+    "Client Office":                            { "factor": 1.00, "counts_working_day": true },
+    "WFH - Company Directed":                   { "factor": 1.00, "counts_working_day": true },
+    "WFH - Weekly Standing":                    { "factor": 1.00, "counts_working_day": true },
+    "WFH - Personal with prior notice (75%)":   { "factor": 0.75, "counts_working_day": true },
+    "WFH - Personal same-day (50%)":            { "factor": 0.50, "counts_working_day": true },
+    "Half Day":                                 { "factor": 0.50, "counts_working_day": true },
+    "Casual Leave (CL)":                        { "factor": 1.00, "counts_working_day": true, "leave_bucket": "CL" },
+    "Sick Leave (SL)":                          { "factor": 1.00, "counts_working_day": true, "leave_bucket": "SL" },
+    "Earned Leave (EL)":                        { "factor": 1.00, "counts_working_day": true, "leave_bucket": "EL" },
+    "LWP":                                      { "factor": 0.00, "counts_working_day": true, "is_lop": true },
+    "Absent":                                   { "factor": 0.00, "counts_working_day": true, "is_lop": true },
+    "Week Off":                                 { "factor": 0.00, "counts_working_day": false },
+    "Holiday":                                  { "factor": 0.00, "counts_working_day": false },
+    "Public Holiday":                           { "factor": 0.00, "counts_working_day": false },
+    "Company Holiday":                          { "factor": 0.00, "counts_working_day": false },
+    "Optional Holiday":                         { "factor": 0.00, "counts_working_day": false },
+    "OT Work (Weekend)":                        { "factor": 0.00, "counts_working_day": false },
+    "Separate Working Day (counted as OT)":     { "factor": 0.00, "counts_working_day": false }
+  },
+
+  "type_aliases": {
+    "WFH - Personal with prior notice": "WFH - Personal with prior notice (75%)",
+    "WFH - Personal same-day": "WFH - Personal same-day (50%)",
+    "Separate Working Day": "Separate Working Day (counted as OT)",
+    "LOP": "LWP",
+    "Leave Without Pay": "LWP",
+    "CL": "Casual Leave (CL)",
+    "SL": "Sick Leave (SL)",
+    "EL": "Earned Leave (EL)",
+    "Weekoff": "Week Off",
+    "Week off": "Week Off"
+  },
+
+  "exit_policy": {
+    "prorate_allowance": true,
+    "prorate_incentive": true,
+    "_comment": "Base always follows actual payable days. This flag controls only the fixed components."
+  },
+
+  "flags": {
+    "ot_ratio_warn_pct": 0.30
+  }
+}
