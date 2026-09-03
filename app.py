@@ -39,12 +39,22 @@ import finance as FIN
 
 HERE = Path(__file__).parent
 CONFIG = HERE / "config"
-UPLOADS = HERE / "timesheets"
-OUT = HERE / "out"
-LOGS = HERE / "logs"
-UPLOADS.mkdir(exist_ok=True)
-OUT.mkdir(exist_ok=True)
-LOGS.mkdir(exist_ok=True)
+
+# Vercel's filesystem is read-only; use /tmp for writable dirs
+if os.environ.get("VERCEL"):
+    UPLOADS = Path("/tmp/timesheets")
+    OUT = Path("/tmp/out")
+    LOGS = Path("/tmp/logs")
+else:
+    UPLOADS = HERE / "timesheets"
+    OUT = HERE / "out"
+    LOGS = HERE / "logs"
+try:
+    UPLOADS.mkdir(exist_ok=True)
+    OUT.mkdir(exist_ok=True)
+    LOGS.mkdir(exist_ok=True)
+except OSError:
+    pass
 
 app = Flask(__name__, static_folder=str(HERE / "public"))
 app.debug = False
@@ -89,12 +99,15 @@ def set_security_headers(response):
     response.headers.pop('Server', None)
     return response
 
-file_handler = RotatingFileHandler(log_file, maxBytes=1024*1024, backupCount=10)
-file_handler.setFormatter(logging.Formatter(
-    '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
-))
-file_handler.setLevel(logging.INFO)
-app.logger.addHandler(file_handler)
+try:
+    file_handler = RotatingFileHandler(log_file, maxBytes=1024*1024, backupCount=10)
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+    ))
+    file_handler.setLevel(logging.INFO)
+    app.logger.addHandler(file_handler)
+except OSError:
+    pass  # Vercel: can't write log files, use stdout instead
 app.logger.setLevel(logging.INFO)
 app.logger.info("Genartml Payroll startup")
 

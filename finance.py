@@ -17,12 +17,21 @@ import json
 import sqlite3
 import uuid
 from pathlib import Path
+import os
 
 HERE = Path(__file__).parent
-DATA = HERE / "data"
-FILES = DATA / "invoices"
-DATA.mkdir(exist_ok=True)
-FILES.mkdir(exist_ok=True)
+# Vercel's filesystem is read-only; use /tmp when running serverless
+if os.environ.get("VERCEL"):
+    DATA = Path("/tmp/data")
+    FILES = DATA / "invoices"
+else:
+    DATA = HERE / "data"
+    FILES = DATA / "invoices"
+try:
+    DATA.mkdir(exist_ok=True)
+    FILES.mkdir(exist_ok=True)
+except OSError:
+    pass
 SECRETS = HERE / "config" / "secrets.json"
 
 EXPENSE_CATEGORIES = [

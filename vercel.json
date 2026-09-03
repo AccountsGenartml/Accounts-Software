@@ -9,5 +9,8 @@
   ],
   "routes": [
     { "src": "/(.*)", "dest": "/api/app.py" }
-  ]
+  ],
+  "env": {
+    "VERCEL": "1"
+  }
 }
