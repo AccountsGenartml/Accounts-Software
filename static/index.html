@@ -876,11 +876,11 @@ function drawRules(){
   <div class="card"><h3>Salary split</h3>
     <div class="meta">How monthly CTC divides. These must add up to 100%.</div>
     <div class="grid2">
-      <div class="fld"><label>Basic salary</label><input type="number" step="0.01" data-s="base_pct" value="${s.base_pct}"></div>
-      <div class="fld"><label>Performance incentive</label><input type="number" step="0.01" data-s="incentive_pct" value="${s.incentive_pct}"></div>
-      <div class="fld"><label>Incentive payout rate</label><input type="number" step="0.01" data-s="incentive_default_payout" value="${s.incentive_default_payout}"></div>
-      <div class="fld"><label>Fixed allowance</label><input type="number" step="0.01" data-s="allowance_pct" value="${s.allowance_pct}"></div>
-    </div><div class="hint">Enter as decimals — 0.70 means 70%.</div></div>
+      <div class="fld"><label>Basic salary (%)</label><input type="number" step="1" data-s="base_pct" value="${+(s.base_pct*100).toFixed(2)}"></div>
+      <div class="fld"><label>Performance incentive (%)</label><input type="number" step="1" data-s="incentive_pct" value="${+(s.incentive_pct*100).toFixed(2)}"></div>
+      <div class="fld"><label>Incentive payout rate (%)</label><input type="number" step="1" data-s="incentive_default_payout" value="${+(s.incentive_default_payout*100).toFixed(2)}"></div>
+      <div class="fld"><label>Fixed allowance (%)</label><input type="number" step="1" data-s="allowance_pct" value="${+(s.allowance_pct*100).toFixed(2)}"></div>
+    </div><div class="hint">Enter as full percentages — 70 means 70%.</div></div>
 
   <div class="card"><h3>Overtime</h3>
     <div class="meta">Overtime rate = (Basic ÷ working days ÷ paid hours) × multiplier.</div>
@@ -891,9 +891,9 @@ function drawRules(){
         <option value="none"${o.rounding==='none'?' selected':''}>Pay exact approved hours</option>
         <option value="floor_30min"${o.rounding==='floor_30min'?' selected':''}>Round down to 30 minutes</option>
       </select></div>
-      <div class="fld"><label>Excessive OT Warning (%)</label><input type="number" step="0.01" data-f="ot_ratio_warn_pct" value="${RULES.flags.ot_ratio_warn_pct||0.3}"></div>
+      <div class="fld"><label>Excessive OT Warning (%)</label><input type="number" step="1" data-fw="ot_ratio_warn_pct" value="${+((RULES.flags.ot_ratio_warn_pct||0.3)*100).toFixed(2)}"></div>
     </div>
-    <div class="hint">Rounding only ever goes down. Excessive warning triggers if OT exceeds X% of basic pay (e.g. 0.3 = 30%).</div></div>
+    <div class="hint">Rounding only ever goes down. Excessive warning triggers if OT exceeds X% of basic pay (e.g. 30 = 30%).</div></div>
 
   <div class="card"><h3>Pay factor by day type</h3>
     <div class="meta">What each day is worth. A type not listed here stops the run — the
@@ -921,7 +921,7 @@ function drawRules(){
   <div class="bar"><button class="btn" id="saveRules">Save pay rules</button>
     <button class="btn ghost" id="afterSave">Save and run self-test</button></div>`;
 
-  $$('[data-s]').forEach(i=>i.oninput=()=>RULES.ctc_split[i.dataset.s]=Number(i.value));
+  $$('[data-s]').forEach(i=>i.oninput=()=>RULES.ctc_split[i.dataset.s]=Number(i.value)/100);
   $$('[data-o]').forEach(i=>i.oninput=()=>RULES.overtime[i.dataset.o]=
     i.dataset.o==='rounding'?i.value:Number(i.value));
   $$('[data-pf]').forEach(i=>i.oninput=()=>RULES.pay_factors[i.dataset.pf].factor=Number(i.value));
@@ -929,6 +929,7 @@ function drawRules(){
   $$('[data-pt]').forEach(i=>i.oninput=()=>RULES.professional_tax_gujarat[+i.dataset.pt].tax=Number(i.value));
   $$('[data-x]').forEach(i=>i.onchange=()=>RULES.exit_policy[i.dataset.x]=i.checked);
   $$('[data-f]').forEach(i=>i.onchange=()=>RULES.flags[i.dataset.f]=i.checked);
+  $$('[data-fw]').forEach(i=>i.onchange=()=>RULES.flags[i.dataset.fw]=Number(i.value)/100);
   $('#saveRules').onclick=()=>saveRules();
   $('#afterSave').onclick=async()=>{if(await saveRules()){$$('#nav button')[5].click();$('#runTest').click();}};
 }
