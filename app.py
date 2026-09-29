@@ -833,6 +833,7 @@ def hr_chat():
     body = request.get_json(force=True)
     user_msg = body.get("message")
     session_id = body.get("session_id", "default")
+    image_data = body.get("image")
     api_key = os.environ.get("GEMINI_API_KEY")
     
     if not api_key:
@@ -951,11 +952,19 @@ COMMUNICATION GUIDELINES:
             
         response = None
         last_error = None
+        
+        parts = [user_msg]
+        if image_data:
+            import base64
+            header, encoded = image_data.split(",", 1)
+            mime_type = header.split(":")[1].split(";")[0]
+            parts.insert(0, {"mime_type": mime_type, "data": base64.b64decode(encoded)})
+            
         for model_name in models_to_try:
             try:
                 model = genai.GenerativeModel(model_name)
                 chat = model.start_chat(history=gemini_history)
-                response = chat.send_message(user_msg)
+                response = chat.send_message(parts)
                 break
             except Exception as e:
                 last_error = e
