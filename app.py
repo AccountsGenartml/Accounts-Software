@@ -851,6 +851,32 @@ def hr_chat():
             payroll_history = FIN.store().list_payroll()
         except Exception:
             payroll_history = []
+            
+        raw_timesheets = []
+        try:
+            from storage_bridge import list_files_in_bucket, download_file_from_bucket
+            from timesheet import read_workbook
+            from engine import Rules
+            
+            timesheets = list_files_in_bucket("timesheets")[:3]
+            for ts in timesheets:
+                if not ts.get("name") or ts.get("name") == ".emptyFolderPlaceholder": continue
+                p = UPLOADS / ts["name"]
+                if not p.exists(): download_file_from_bucket("timesheets", ts["name"], p)
+                try:
+                    wb_data = read_workbook(p, Rules(), year=None, month=None)
+                    def serialize_dt(obj):
+                        if isinstance(obj, (dt.date, dt.datetime)): return obj.isoformat()
+                        if isinstance(obj, Decimal): return float(obj)
+                        raise TypeError
+                    raw_timesheets.append({
+                        "filename": ts["name"],
+                        "data": json.loads(json.dumps(wb_data, default=serialize_dt))
+                    })
+                except Exception as e:
+                    raw_timesheets.append({"filename": ts["name"], "error": str(e)})
+        except Exception as e:
+            raw_timesheets = [{"error": str(e)}]
         
         # Load History
         chat_data = _json("chat_history")
@@ -866,8 +892,11 @@ def hr_chat():
         history = session["messages"]
             
         sys_prompt = f"""You are the Genartml Payroll HR Assistant, a proprietary, highly intelligent tool built by Genartml Pvt. Ltd.
-You help the HR admin by answering questions about payroll, employee leave balances, statutory compliance, company policies, and past timesheets.
+You help the HR admin by answering questions about payroll, employee leave balances, statutory compliance, company policies, and past/uploaded timesheets.
 Use the following live company data to answer questions accurately.
+
+RAW UPLOADED TIMESHEETS (WAITING TO BE RUN):
+{json.dumps(raw_timesheets)}
 
 COMPANY RULES:
 {json.dumps(rules)}
