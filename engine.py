@@ -265,10 +265,10 @@ def compute_employee(emp, rows, paid_days, rules, cal, year, month):
     esi = _d(0)
     tds = _d(emp.get("tds_monthly") or 0) if compliance.get("tds_enabled") else _d(0)
     
-    if compliance.get("epf_enabled"):
+    if compliance.get("epf_enabled") and not emp.get("epf_opt_out"):
         epf = base_earned * _d(str(compliance.get("epf_rate", 0.12)))
         
-    if compliance.get("esi_enabled"):
+    if compliance.get("esi_enabled") and not emp.get("esi_opt_out"):
         esi_thresh = _d(str(compliance.get("esi_threshold", 21000)))
         if gross <= esi_thresh:
             esi = gross * _d(str(compliance.get("esi_rate", 0.0075)))

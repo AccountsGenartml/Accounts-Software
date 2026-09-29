@@ -843,9 +843,14 @@ function drawEmps(){
       value="${(e.leave_opening||{})[b]??0}"></div>`).join('')}
       <div class="fld"><label>Also known as (comma separated)</label>
       <input data-i="${i}" data-k="aliases" value="${esc((e.aliases||[]).join(', '))}"></div>
+      <div class="fld" style="grid-column: 1 / -1; display:flex; gap:16px;">
+        <label class="chk"><input type="checkbox" data-i="${i}" data-chk="epf_opt_out" ${e.epf_opt_out?'checked':''}> Disable EPF for this employee</label>
+        <label class="chk"><input type="checkbox" data-i="${i}" data-chk="esi_opt_out" ${e.esi_opt_out?'checked':''}> Disable ESI for this employee</label>
+      </div>
     </div></div>`).join('');
   $$('#empList input').forEach(inp=>inp.oninput=()=>{
     const e=EMPS[+inp.dataset.i];
+    if(inp.dataset.chk){e[inp.dataset.chk]=inp.checked;return;}
     if(inp.dataset.lv){e.leave_opening=e.leave_opening||{};e.leave_opening[inp.dataset.lv]=Number(inp.value)||0;return;}
     const k=inp.dataset.k;
     if(k==='aliases')e.aliases=inp.value.split(',').map(s=>s.trim()).filter(Boolean);
