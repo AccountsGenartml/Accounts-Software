@@ -860,7 +860,14 @@ COMMUNICATION GUIDELINES:
 5. You do NOT have the ability to modify the database; you can only read it and advise the user on how they can change it in the dashboard.
 6. NEVER refer to yourself as an AI, a large language model, or an AI assistant. NEVER mention Google, Gemini, or any underlying technology. You are exclusively the "Genartml HR Assistant".
 """
-        model = genai.GenerativeModel('gemini-pro')
+        models_to_try = [
+            'gemini-1.5-flash',
+            'gemini-1.5-pro',
+            'gemini-1.0-pro',
+            'gemini-pro',
+            'gemini-1.5-flash-latest',
+            'gemini-1.5-pro-latest'
+        ]
         
         # Convert our history to Gemini format
         gemini_history = []
@@ -874,8 +881,24 @@ COMMUNICATION GUIDELINES:
             role = "model" if msg["role"] == "assistant" else "user"
             gemini_history.append({"role": role, "parts": [msg["content"]]})
             
-        chat = model.start_chat(history=gemini_history)
-        response = chat.send_message(user_msg)
+        response = None
+        last_error = None
+        for model_name in models_to_try:
+            try:
+                model = genai.GenerativeModel(model_name)
+                chat = model.start_chat(history=gemini_history)
+                response = chat.send_message(user_msg)
+                break
+            except Exception as e:
+                last_error = e
+                err_str = str(e).lower()
+                if "404" in err_str or "not found" in err_str or "not supported" in err_str:
+                    continue
+                else:
+                    raise e
+                    
+        if not response:
+            raise Exception(f"All Gemini models failed. Last error: {str(last_error)}")
         
         # Save History
         history.append({"role": "user", "content": user_msg})

@@ -45,15 +45,38 @@ def extract_payroll_from_pdf(pdf_bytes, api_key):
     }
     
     # 2. Call Gemini API
-    model = genai.GenerativeModel('gemini-pro')
+    models_to_try = [
+        'gemini-1.5-flash',
+        'gemini-1.5-pro',
+        'gemini-1.0-pro',
+        'gemini-pro',
+        'gemini-1.5-flash-latest',
+        'gemini-1.5-pro-latest'
+    ]
     
-    response = model.generate_content(
-        [SYS_PROMPT + "\n\nEXTRACT FROM THE FOLLOWING TIMESHEET DOCUMENT:\n", doc_part],
-        generation_config=genai.types.GenerationConfig(
-            temperature=0.0,
-            response_mime_type="application/json"
-        )
-    )
+    response = None
+    last_error = None
+    for model_name in models_to_try:
+        try:
+            model = genai.GenerativeModel(model_name)
+            response = model.generate_content(
+                [SYS_PROMPT + "\n\nEXTRACT FROM THE FOLLOWING TIMESHEET DOCUMENT:\n", doc_part],
+                generation_config=genai.types.GenerationConfig(
+                    temperature=0.0,
+                    response_mime_type="application/json"
+                )
+            )
+            break
+        except Exception as e:
+            last_error = e
+            err_str = str(e).lower()
+            if "404" in err_str or "not found" in err_str or "not supported" in err_str:
+                continue
+            else:
+                raise e
+                
+    if not response:
+        raise Exception(f"All Gemini models failed. Last error: {str(last_error)}")
     
     # 3. Parse JSON (cleaning any markdown tags just in case)
     try:
