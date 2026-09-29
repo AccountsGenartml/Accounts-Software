@@ -45,10 +45,10 @@ def extract_payroll_from_pdf(pdf_bytes, api_key):
     }
     
     # 2. Call Gemini API
-    model = genai.GenerativeModel('gemini-1.5-pro', system_instruction=SYS_PROMPT)
+    model = genai.GenerativeModel('gemini-pro')
     
     response = model.generate_content(
-        [doc_part],
+        [SYS_PROMPT + "\n\nEXTRACT FROM THE FOLLOWING TIMESHEET DOCUMENT:\n", doc_part],
         generation_config=genai.types.GenerationConfig(
             temperature=0.0,
             response_mime_type="application/json"
