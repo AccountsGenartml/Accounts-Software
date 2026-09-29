@@ -1088,6 +1088,7 @@ $('#sendChatBtn').onclick = async () => {
   input.style.height = '40px';
   container.scrollTop = container.scrollHeight;
   
+  const currentSessionId = ACTIVE_SESSION;
   const typingId = 'typing-' + Date.now();
   container.innerHTML += `<div id="${typingId}" class="chat-bubble ai" style="color:var(--ink-3)">Thinking <span class="spin" style="border-color:var(--ink-3) transparent var(--ink-3) transparent;width:14px;height:14px;border-width:2px"></span></div>`;
   container.scrollTop = container.scrollHeight;
@@ -1096,21 +1097,23 @@ $('#sendChatBtn').onclick = async () => {
     const res = await api('/api/chat', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({ message: msg, session_id: ACTIVE_SESSION })
+      body: JSON.stringify({ message: msg, session_id: currentSessionId })
     });
     
     $('#'+typingId)?.remove();
     if (res.reply) {
-      if (!CHAT_DATA.sessions[ACTIVE_SESSION]) CHAT_DATA.sessions[ACTIVE_SESSION] = { messages: [] };
-      CHAT_DATA.sessions[ACTIVE_SESSION].messages = res.history;
+      if (!CHAT_DATA.sessions[res.session_id]) CHAT_DATA.sessions[res.session_id] = { messages: [] };
+      CHAT_DATA.sessions[res.session_id].messages = res.history;
       
       // update title
-      if (res.history.length === 2 && CHAT_DATA.sessions[ACTIVE_SESSION].title === "New Chat") {
-          CHAT_DATA.sessions[ACTIVE_SESSION].title = msg.substring(0, 30) + '...';
+      if (res.history.length === 2 && CHAT_DATA.sessions[res.session_id].title === "New Chat") {
+          CHAT_DATA.sessions[res.session_id].title = msg.substring(0, 30) + '...';
       }
       
       renderChatSessions();
-      renderChatHistory();
+      if (ACTIVE_SESSION === res.session_id) {
+          renderChatHistory();
+      }
     } else if (res.error) {
        toast(res.error, 'bad');
     }
