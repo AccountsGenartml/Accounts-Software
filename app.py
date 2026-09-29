@@ -394,7 +394,6 @@ def ai_run():
     if not api_key:
         secrets_path = HERE / "config" / "secrets.json"
         if secrets_path.exists():
-            import json
             try:
                 api_key = json.loads(secrets_path.read_text()).get("gemini_api_key")
             except Exception:
@@ -806,7 +805,6 @@ def hr_chat():
     if not api_key:
         secrets_path = HERE / "config" / "secrets.json"
         if secrets_path.exists():
-            import json
             try:
                 api_key = json.loads(secrets_path.read_text()).get("gemini_api_key")
             except Exception:
