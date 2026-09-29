@@ -140,9 +140,14 @@ def compute_employee(emp, rows, paid_days, rules, cal, year, month):
     sp = rules.cfg["ctc_split"]
     ot_cfg = rules.cfg["overtime"]
 
-    base_salary = ctc * _d(sp["base_pct"])
-    incentive_full = ctc * _d(sp["incentive_pct"]) * _d(sp["incentive_default_payout"])
-    allowance_full = ctc * _d(sp["allowance_pct"])
+    base_pct = _d(str(emp.get("base_pct") if emp.get("base_pct") is not None else sp["base_pct"]))
+    incentive_pct = _d(str(emp.get("incentive_pct") if emp.get("incentive_pct") is not None else sp["incentive_pct"]))
+    allowance_pct = _d(str(emp.get("allowance_pct") if emp.get("allowance_pct") is not None else sp["allowance_pct"]))
+    incentive_payout = _d(str(emp.get("incentive_default_payout") if emp.get("incentive_default_payout") is not None else sp["incentive_default_payout"]))
+
+    base_salary = ctc * base_pct
+    incentive_full = ctc * incentive_pct * incentive_payout
+    allowance_full = ctc * allowance_pct
 
     # ---- THE divisor. Month constant. Never attendance-derived.
     pd = _d(paid_days)

@@ -843,14 +843,24 @@ function drawEmps(){
       value="${(e.leave_opening||{})[b]??0}"></div>`).join('')}
       <div class="fld"><label>Also known as (comma separated)</label>
       <input data-i="${i}" data-k="aliases" value="${esc((e.aliases||[]).join(', '))}"></div>
-      <div class="fld" style="grid-column: 1 / -1; display:flex; gap:16px;">
+      <div class="fld" style="grid-column: 1 / -1; display:flex; gap:16px; margin-top: 8px;">
         <label class="chk"><input type="checkbox" data-i="${i}" data-chk="epf_opt_out" ${e.epf_opt_out?'checked':''}> Disable EPF for this employee</label>
         <label class="chk"><input type="checkbox" data-i="${i}" data-chk="esi_opt_out" ${e.esi_opt_out?'checked':''}> Disable ESI for this employee</label>
       </div>
+      <div class="fld" style="grid-column: 1 / -1; margin-top: 16px;"><label style="font-weight: 600;">Custom Salary Split Overrides (Leave empty to use global company pay rules)</label></div>
+      <div class="fld"><label>Basic Salary (%)</label><input type="number" step="1" data-i="${i}" data-opct="base_pct" placeholder="e.g. 70" value="${e.base_pct!=null?+(e.base_pct*100).toFixed(2):''}"></div>
+      <div class="fld"><label>Performance Incentive (%)</label><input type="number" step="1" data-i="${i}" data-opct="incentive_pct" placeholder="e.g. 15" value="${e.incentive_pct!=null?+(e.incentive_pct*100).toFixed(2):''}"></div>
+      <div class="fld"><label>Fixed Allowance (%)</label><input type="number" step="1" data-i="${i}" data-opct="allowance_pct" placeholder="e.g. 15" value="${e.allowance_pct!=null?+(e.allowance_pct*100).toFixed(2):''}"></div>
+      <div class="fld"><label>Incentive Payout Rate (%)</label><input type="number" step="1" data-i="${i}" data-opct="incentive_default_payout" placeholder="e.g. 100" value="${e.incentive_default_payout!=null?+(e.incentive_default_payout*100).toFixed(2):''}"></div>
     </div></div>`).join('');
   $$('#empList input').forEach(inp=>inp.oninput=()=>{
     const e=EMPS[+inp.dataset.i];
     if(inp.dataset.chk){e[inp.dataset.chk]=inp.checked;return;}
+    if(inp.dataset.opct){
+        if(inp.value==='') delete e[inp.dataset.opct];
+        else e[inp.dataset.opct]=Number(inp.value)/100;
+        return;
+    }
     if(inp.dataset.lv){e.leave_opening=e.leave_opening||{};e.leave_opening[inp.dataset.lv]=Number(inp.value)||0;return;}
     const k=inp.dataset.k;
     if(k==='aliases')e.aliases=inp.value.split(',').map(s=>s.trim()).filter(Boolean);
