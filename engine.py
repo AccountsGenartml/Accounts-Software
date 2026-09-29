@@ -2,8 +2,8 @@
 Genartml payroll engine.
 
 Golden rule, enforced by assertion below:
-    per_day = base_salary / working_days
-    working_days is a MONTH CONSTANT, identical for every employee.
+    per_day = base_salary / paid_days
+    paid_days is a MONTH CONSTANT, identical for every employee.
     It is never derived from attendance, days present, or payable days.
 """
 
@@ -65,6 +65,7 @@ class CompanyCalendar:
         pub = [d for d in days if d in self.holidays and not self.is_weekly_off(d)]
         pub_on_weekend = [d for d in days if d in self.holidays and self.is_weekly_off(d)]
         working = len(days) - len(weekly_offs) - len(pub)
+        paid = len(days) - len(weekly_offs)
         return {
             "calendar_days": len(days),
             "weekly_offs": len(weekly_offs),
@@ -74,6 +75,7 @@ class CompanyCalendar:
             "public_holiday_dates": [
                 {"date": d.isoformat(), "name": self.holidays[d]} for d in pub],
             "working_days": working,
+            "paid_days": paid,
         }
 
 
@@ -132,7 +134,7 @@ class Rules:
 
 # ---------------------------------------------------------------- payroll
 
-def compute_employee(emp, rows, working_days, rules, cal, year, month):
+def compute_employee(emp, rows, paid_days, rules, cal, year, month):
     """emp: dict with ctc_monthly, name, etc.  rows: list of normalised day rows."""
     ctc = _d(emp["ctc_monthly"])
     sp = rules.cfg["ctc_split"]
@@ -143,10 +145,10 @@ def compute_employee(emp, rows, working_days, rules, cal, year, month):
     allowance_full = ctc * _d(sp["allowance_pct"])
 
     # ---- THE divisor. Month constant. Never attendance-derived.
-    wd = _d(working_days)
-    if wd <= 0:
-        raise PayrollError("working_days must be positive")
-    per_day = base_salary / wd
+    pd = _d(paid_days)
+    if pd <= 0:
+        raise PayrollError("paid_days must be positive")
+    per_day = base_salary / pd
     per_hour = per_day / _d(ot_cfg["paid_hours_per_day"])
     ot_rate = per_hour * _d(ot_cfg["multiplier"])
 
@@ -207,9 +209,9 @@ def compute_employee(emp, rows, working_days, rules, cal, year, month):
                 flags.append({"code": "MISSING_PUNCH", "date": d.isoformat(),
                               "detail": f"{t} day missing a punch."})
 
-    if payable_days > wd:
-        flags.append({"code": "PAYABLE_EXCEEDS_WORKING",
-                      "detail": f"payable_days {payable_days} > working_days {wd}. "
+    if payable_days > pd:
+        flags.append({"code": "PAYABLE_EXCEEDS_PAID",
+                      "detail": f"payable_days {payable_days} > paid_days {pd}. "
                                 "Check for duplicate dates or a misclassified type."})
 
     ot_hours = Decimal(rules.round_ot(ot_hours)).quantize(Decimal("0.01"))
@@ -222,7 +224,7 @@ def compute_employee(emp, rows, working_days, rules, cal, year, month):
     if join or exitd:
         active = 0
         for d in cal.month_days(year, month):
-            if cal.is_weekly_off(d) or (d in cal.holidays and not cal.is_weekly_off(d)):
+            if cal.is_weekly_off(d):
                 continue
             if join and d < join:
                 continue
@@ -230,36 +232,52 @@ def compute_employee(emp, rows, working_days, rules, cal, year, month):
                 continue
             active += 1
         active_wd = active
-        frac = _d(active) / wd if wd else _d(0)
+        frac = _d(active) / pd if pd else _d(0)
 
     ep = rules.cfg["exit_policy"]
     allowance_paid = allowance_full * (frac if ep["prorate_allowance"] else _d(1))
     incentive_paid = incentive_full * (frac if ep["prorate_incentive"] else _d(1))
 
-    base_earned = per_day * payable_days
+    is_static = rules.cfg.get("flags", {}).get("static_base_pay", True)
+    base_earned = base_salary if is_static else base_salary * (frac if ep["prorate_allowance"] else _d(1))
     ot_payable = ot_rate * ot_hours
     gross = base_earned + ot_payable + allowance_paid + incentive_paid
     ptax = rules.professional_tax(gross)
     reimb = _d(emp.get("reimbursements") or 0)
     other_ded = _d(emp.get("other_deductions") or 0)
-    total_ded = ptax + other_ded
-    net = gross - total_ded + reimb
-
-    if base_earned > 0 and ot_payable / base_earned > _d(rules.cfg["flags"]["ot_ratio_warn_pct"]):
-        flags.append({"code": "OT_RATIO_HIGH",
-                      "detail": f"OT is {(ot_payable / base_earned * 100):.0f}% of base earned."})
 
     # deduction-style presentation of the shortfall, for the payslip
     lop_deduction = per_day * lop_days
-    partial_deduction = per_day * (wd - payable_days) - lop_deduction
+    partial_deduction = per_day * (pd - payable_days) - lop_deduction
     if partial_deduction < 0:
         partial_deduction = _d(0)
+
+    # Compliance: EPF, ESI, TDS
+    compliance = {}
+    comp_file = CONFIG / "compliance.json"
+    if comp_file.exists():
+        compliance = json.loads(comp_file.read_text())
+    
+    epf = _d(0)
+    esi = _d(0)
+    tds = _d(emp.get("tds_monthly") or 0) if compliance.get("tds_enabled") else _d(0)
+    
+    if compliance.get("epf_enabled"):
+        epf = base_earned * _d(str(compliance.get("epf_rate", 0.12)))
+        
+    if compliance.get("esi_enabled"):
+        esi_thresh = _d(str(compliance.get("esi_threshold", 21000)))
+        if gross <= esi_thresh:
+            esi = gross * _d(str(compliance.get("esi_rate", 0.0075)))
+
+    total_ded = ptax + other_ded + lop_deduction + partial_deduction + epf + esi + tds
+    net = gross - total_ded + reimb
 
     return {
         "employee": emp,
         "rows_in_month": rows_in_month,
-        "working_days": int(working_days),
-        "active_working_days": active_wd,
+        "paid_days": int(paid_days),
+        "active_paid_days": active_wd,
         "month_fraction": frac,
         "payable_days": payable_days,
         "lop_days": lop_days,
@@ -282,14 +300,17 @@ def compute_employee(emp, rows, working_days, rules, cal, year, month):
         "professional_tax": money(ptax),
         "other_deductions": money(other_ded),
         "total_deductions": money(total_ded),
+        "epf": money(epf),
+        "esi": money(esi),
+        "tds": money(tds),
         "reimbursements": money(reimb),
         "net_pay": money(net),
         "flags": flags,
     }
 
 
-def run_payroll(employees_rows, working_days, rules, cal, year, month):
-    results = [compute_employee(e, rows, working_days, rules, cal, year, month)
+def run_payroll(employees_rows, paid_days, rules, cal, year, month):
+    results = [compute_employee(e, rows, paid_days, rules, cal, year, month)
                for e, rows in employees_rows]
     # No timesheet data for the month means we have nothing to pay against.
     # Without this guard the fixed allowance and incentive would still pay out.
@@ -302,9 +323,9 @@ def run_payroll(employees_rows, working_days, rules, cal, year, month):
               "Refusing to pay allowance and incentive against an empty timesheet.")
 
     # HARD ASSERTION -- the bug this engine exists to prevent
-    divisors = {r["working_days"] for r in results}
+    divisors = {r["paid_days"] for r in results}
     if len(divisors) > 1:
         raise PayrollError(
-            f"WORKING_DAYS_MISMATCH: employees in one run got different divisors "
-            f"{sorted(divisors)}. working_days must be a month constant. Halting.")
+            f"PAID_DAYS_MISMATCH: employees in one run got different divisors "
+            f"{sorted(divisors)}. paid_days must be a month constant. Halting.")
     return results

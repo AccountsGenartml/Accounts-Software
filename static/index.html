@@ -6,375 +6,262 @@
 <title>Genartml Payroll</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  color-scheme: dark;
-  --bg:#050505; --bg-2:#111111; --bg-3:#1A1A1A;
-  --surface:rgba(255,255,255,.03); --surface-2:rgba(255,255,255,.05); --surface-3:rgba(255,255,255,.08);
-  --glass:rgba(255,255,255,.02); --glass-border:rgba(255,255,255,.1);
-  --ink:#FFFFFF; --ink-2:#CCCCCC; --ink-3:#888888;
-  --rule:rgba(255,255,255,.12); --rule-2:rgba(255,255,255,.06);
-  --accent:#FFFFFF; --accent-soft:rgba(255,255,255,.1); --accent-glow:rgba(255,255,255,.15);
-  --accent-2:#EEEEEE;
-  --flag:#DDDDDD; --flag-soft:rgba(255,255,255,.08); --flag-rule:rgba(255,255,255,.2);
-  --ok:#FFFFFF; --ok-soft:rgba(255,255,255,.15);
-  --stop:#999999; --stop-soft:rgba(255,255,255,.05);
-  --radius:14px; --radius-sm:10px; --radius-xs:7px;
-  --shadow:0 8px 32px rgba(0,0,0,.35), 0 1px 2px rgba(0,0,0,.2);
-  --shadow-sm:0 2px 12px rgba(0,0,0,.25);
-  --transition:all .25s cubic-bezier(.4,0,.2,1);
+  --bg: #f8f9fa; --bg-2: #ffffff; --bg-3: #f1f3f5;
+  --surface: #ffffff; --surface-2: #f8f9fa; --surface-3: #f1f3f5;
+  --glass: #ffffff; --glass-border: #e9ecef;
+  --ink: #212529; --ink-2: #495057; --ink-3: #868e96;
+  --rule: #dee2e6; --rule-2: #f1f3f5;
+  --accent: #212529; --accent-soft: rgba(33,37,41,.08); --accent-glow: rgba(33,37,41,.15);
+  --accent-2: #495057; --accent-grad: linear-gradient(135deg, #212529, #343a40);
+  --pink: #e03131; --pink-soft: rgba(224,49,49,.12);
+  --flag: #e67700; --flag-soft: rgba(230,119,0,.08); --flag-rule: rgba(230,119,0,.25);
+  --ok: #2b8a3e; --ok-soft: rgba(43,138,62,.08);
+  --stop: #e03131; --stop-soft: rgba(224,49,49,.08);
+  --radius: 10px; --radius-sm: 8px; --radius-xs: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,.06), 0 0 0 1px rgba(0,0,0,.04);
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.04);
+  --transition: all .2s ease;
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%}
-body{
-  background:var(--bg); color:var(--ink);
-  font:14px/1.55 "Inter",system-ui,-apple-system,sans-serif;
-  -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
-}
+body{background:var(--bg);color:var(--ink);
+  font:14px/1.6 "Poppins",system-ui,-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
 ::selection{background:var(--accent-soft);color:var(--accent)}
 .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 button,input,select,textarea{font:inherit;color:inherit}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:var(--radius-xs)}
-a{color:var(--accent);text-decoration:none}
+a{color:var(--ink);text-decoration:none}
 
-/* ========== Ambient background mesh (Removed for B&W) ========== */
-.ambient{display:none}
+/* ========== Ambient (hidden in light mode but referenced in JS) ========== */
+.aurora{display:none}
+
+/* ========== Mobile ========== */
+.mobile-topbar{display:none;position:fixed;top:0;left:0;right:0;height:56px;
+  background:#fff;border-bottom:1px solid var(--rule);z-index:100;
+  padding:0 16px;align-items:center;justify-content:space-between}
+.mobile-topbar b{font-size:15px;font-weight:700}
+.mobile-topbar span{font-size:11px;color:var(--ink-3);display:block}
+.hamburger{width:36px;height:36px;border:0;background:transparent;cursor:pointer;padding:4px}
+.hamburger svg{width:24px;height:24px;color:var(--ink)}
+.mobile-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:199}
+.mobile-backdrop.open{display:block}
+@media(max-width:768px){
+  .mobile-topbar{display:flex}
+  .shell{grid-template-columns:1fr !important}
+  .rail{position:fixed;left:-280px;top:0;bottom:0;width:260px;z-index:200;
+    transition:left .3s ease;box-shadow:none}
+  .rail.open{left:0;box-shadow:4px 0 24px rgba(0,0,0,.12)}
+  .main{padding:72px 16px 80px !important}
+}
 
 /* ========== Shell layout ========== */
-.shell{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
-.rail{background:rgba(5,5,5,.90);backdrop-filter:blur(40px);
-  -webkit-backdrop-filter:blur(40px);
-  border-right:1px solid var(--rule);padding:26px 0;
-  display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
-  z-index:10}
-.mark{display:flex;align-items:center;gap:12px;padding:0 22px 24px}
-.mark svg{width:26px;height:26px;color:var(--ink)}
-.mark b{font-size:16px;font-weight:700;letter-spacing:-.3px;color:var(--ink)}
-.mark span{display:block;font-size:11px;color:var(--ink-3);font-weight:400;margin-top:2px;
-  letter-spacing:.3px;text-transform:uppercase}
-.nav{padding:0 12px;display:flex;flex-direction:column;gap:2px}
-.nav button{display:flex;align-items:center;gap:11px;width:100%;text-align:left;
-  background:none;border:0;padding:10px 14px;border-radius:var(--radius-sm);cursor:pointer;
-  color:var(--ink-3);font-size:13.5px;font-weight:450;
-  transition:var(--transition);position:relative;overflow:hidden}
-.nav button::before{content:"";position:absolute;inset:0;border-radius:var(--radius-sm);
-  background:var(--surface-2);
-  opacity:0;transition:opacity .25s}
-.nav button:hover{color:var(--ink);transform:translateX(2px)}
-.nav button:hover::before{opacity:1}
-.nav button[aria-current="true"]{color:var(--ink);font-weight:600;background:var(--surface-3)}
-.nav button[aria-current="true"]::before{opacity:1}
-.nav i{width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.35;
-  flex:none;transition:var(--transition)}
-.nav button[aria-current="true"] i{opacity:1;box-shadow:0 0 8px var(--accent-glow)}
-.rail-foot{margin-top:auto;padding:16px 22px 0;border-top:1px solid var(--rule);
-  font-size:11px;color:var(--ink-3);line-height:1.7;letter-spacing:.2px}
-.main{padding:36px 42px 80px;max-width:1260px;animation:fadeUp .4s ease-out}
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.shell{display:grid;grid-template-columns:250px 1fr;min-height:100vh}
+.rail{background:#fff;border-right:1px solid var(--rule);
+  padding:28px 0 20px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.mark{padding:0 20px 24px;display:flex;align-items:center;gap:10px}
+.mark img{width:28px;height:28px;object-fit:contain;border-radius:6px}
+.mark b{font-size:15px;font-weight:700;letter-spacing:-.2px}
+.mark span{font-size:11px;color:var(--ink-3);display:block;margin-top:1px}
+.nav{display:flex;flex-direction:column;gap:2px;padding:0 10px}
+.nav button{display:flex;align-items:center;gap:10px;padding:9px 14px;
+  border:0;background:transparent;text-align:left;cursor:pointer;
+  color:var(--ink-2);font-size:13.5px;font-weight:450;
+  border-radius:var(--radius-sm);transition:var(--transition);position:relative}
+.nav button:hover{background:var(--rule-2);color:var(--ink)}
+.nav button[aria-current="true"]{color:#fff;font-weight:600;background:var(--ink);
+  box-shadow:0 1px 3px rgba(0,0,0,.15)}
+.nav i{width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.3;
+  flex:none;border:none;display:block}
+.nav button[aria-current="true"] i{opacity:1;background:#fff}
+.rail-foot{margin-top:auto;padding:16px 20px 0;border-top:1px solid var(--rule);
+  font-size:11px;color:var(--ink-3);line-height:1.7}
+.main{padding:32px 40px 80px;max-width:1200px;animation:fadeUp .35s ease-out}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
 /* ========== Typography ========== */
-h1{font-size:26px;font-weight:700;letter-spacing:-.5px;margin:0;color:var(--ink)}
-.sub{color:var(--ink-2);margin:8px 0 28px;font-size:13.5px;max-width:68ch;line-height:1.65}
-h2{font-size:16px;font-weight:650;margin:34px 0 14px;letter-spacing:-.2px;color:var(--ink)}
+h1{font-size:24px;font-weight:700;letter-spacing:-.4px;margin:0;color:var(--ink)}
+.sub{color:var(--ink-2);margin:6px 0 24px;font-size:13.5px;max-width:68ch;line-height:1.65}
+h2{font-size:16px;font-weight:650;margin:28px 0 12px;letter-spacing:-.2px;color:var(--ink)}
 h2:first-child{margin-top:0}
+h3{font-size:15px;font-weight:650;margin:0 0 6px;color:var(--ink)}
 
-/* ========== Divisor band (the hero) ========== */
-.divisor{background:var(--glass);backdrop-filter:blur(24px);
-  -webkit-backdrop-filter:blur(24px);
-  border:1px solid var(--glass-border);border-radius:var(--radius);
-  padding:22px 26px;display:flex;align-items:center;gap:28px;flex-wrap:wrap;
-  margin-bottom:10px;box-shadow:var(--shadow-sm);
-  transition:var(--transition)}
-.divisor:hover{border-color:rgba(255,255,255,.12);box-shadow:var(--shadow)}
-.eq{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+/* ========== Divisor band ========== */
+.divisor{background:#fff;border:1px solid var(--rule);border-radius:var(--radius);
+  padding:20px 24px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+  margin-bottom:16px;box-shadow:var(--shadow-sm)}
+.eq{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
 .eq .t{text-align:center}
-.eq .t b{display:block;font-size:22px;font-weight:600;color:var(--ink)}
-.eq .t span{display:block;font-size:11px;color:var(--ink-3);margin-top:3px;white-space:nowrap}
-.eq .op{font-size:18px;color:var(--ink-3);font-weight:300}
-.eq .res{background:var(--ink);
-  color:#000;border-radius:var(--radius-sm);padding:10px 18px;text-align:center;
-  box-shadow:0 4px 20px rgba(255,255,255,.1)}
-.eq .res b{font-size:26px;font-weight:700;line-height:1}
-.eq .res span{color:rgba(0,0,0,.65);font-size:10.5px;margin-top:3px}
+.eq .t b{display:block;font-size:20px;font-weight:600;color:var(--ink)}
+.eq .t span{display:block;font-size:11px;color:var(--ink-3);margin-top:2px;white-space:nowrap}
+.eq .op{font-size:16px;color:var(--ink-3);font-weight:300}
+.eq .res{background:var(--ink);color:#fff;border-radius:var(--radius-sm);
+  padding:10px 16px;text-align:center}
+.eq .res b{font-size:22px;font-weight:700;line-height:1}
+.eq .res span{color:rgba(255,255,255,.65);font-size:10.5px;margin-top:2px;display:block}
 .divisor .why{font-size:12px;color:var(--ink-2);border-left:2px solid var(--ink);
-  padding-left:14px;max-width:36ch;line-height:1.6}
+  padding-left:12px;max-width:36ch;line-height:1.6}
 
 /* ========== Controls ========== */
-.bar{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin:20px 0 6px}
-label.f{display:flex;flex-direction:column;gap:6px;font-size:11.5px;color:var(--ink-3);
+.bar{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin:18px 0 6px}
+label.f{display:flex;flex-direction:column;gap:5px;font-size:11.5px;color:var(--ink-3);
   text-transform:uppercase;letter-spacing:.4px;font-weight:500}
 select,input:not([type=checkbox]):not([type=file]):not([type=radio]){
-  background:var(--surface-2);border:1px solid var(--rule);border-radius:var(--radius-xs);
-  padding:9px 12px;min-width:150px;color:var(--ink);
+  background:#fff;border:1px solid var(--rule);border-radius:var(--radius-xs);
+  padding:8px 12px;min-width:150px;color:var(--ink);height:auto;
   transition:var(--transition)}
-select:hover,input:hover{border-color:rgba(255,255,255,.14)}
-select:focus,input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B7188' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
+select:hover,input:hover{border-color:var(--ink-3)}
+select:focus,input:focus{border-color:var(--ink);box-shadow:0 0 0 3px var(--accent-soft)}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23868e96' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");
   background-repeat:no-repeat;background-position:right 10px center;padding-right:30px}
-select option{background:var(--bg-2);color:var(--ink)}
+select option{background:#fff;color:var(--ink)}
 
-.btn{background:var(--ink);color:#000;
-  border:0;border-radius:var(--radius-xs);padding:10px 20px;
-  cursor:pointer;font-weight:600;font-size:13.5px;
-  transition:var(--transition);position:relative;overflow:hidden}
-.btn::before{content:"";position:absolute;inset:0;
-  background:rgba(255,255,255,.1);
-  opacity:0;transition:opacity .25s}
-.btn:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(255,255,255,.1)}
-.btn:hover::before{opacity:1}
-.btn:active{transform:translateY(0)}
-.btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none;background:var(--surface-3);color:var(--ink-2)}
+.btn{background:var(--accent-grad);color:#fff;
+  border:0;border-radius:var(--radius-xs);padding:9px 18px;
+  cursor:pointer;font-weight:600;font-size:13px;
+  transition:var(--transition);position:relative;overflow:hidden;
+  box-shadow:0 1px 3px rgba(0,0,0,.12);display:inline-flex;align-items:center;gap:6px}
+.btn:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 3px 8px rgba(0,0,0,.15)}
+.btn:active{transform:translateY(0);box-shadow:0 1px 2px rgba(0,0,0,.1)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
 
-.btn.ghost{background:var(--surface-2);color:var(--ink);
-  border:1px solid var(--rule);backdrop-filter:blur(12px)}
-.btn.ghost::before{display:none}
-.btn.ghost:hover{background:var(--surface-3);border-color:rgba(255,255,255,.12);
-  transform:translateY(-1px);box-shadow:var(--shadow-sm)}
-.btn.sm{padding:7px 14px;font-size:12.5px}
+.btn.ghost{background:#fff;color:var(--ink);
+  border:1px solid var(--rule);box-shadow:none}
+.btn.ghost:hover{background:var(--rule-2);border-color:var(--ink-3);transform:translateY(-1px)}
+.btn.sm{padding:6px 12px;font-size:12px}
 
-.btn.danger{background:var(--surface-2);color:var(--ink);
-  border:1px solid rgba(255,255,255,.3)}
-.btn.danger:hover{background:var(--surface-3);border-color:var(--ink);
-  box-shadow:0 4px 16px rgba(255,255,255,.1)}
+.btn.danger{background:#fff;color:var(--stop);
+  border:1px solid var(--pink-soft);box-shadow:none}
+.btn.danger:hover{background:var(--stop);color:#fff;border-color:var(--stop)}
 
 /* ========== Tables ========== */
-.tw{background:var(--glass);backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  border:1px solid var(--glass-border);border-radius:var(--radius);
-  overflow:auto;box-shadow:var(--shadow-sm);transition:var(--transition)}
-.tw:hover{border-color:rgba(255,255,255,.10)}
-table{width:100%;border-collapse:collapse}
+.tw{background:#fff;border:1px solid var(--rule);border-radius:var(--radius);
+  overflow:auto;box-shadow:var(--shadow-sm);margin-bottom:20px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
 th{font-size:11px;font-weight:600;color:var(--ink-3);text-align:left;
-  padding:13px 15px;border-bottom:1px solid var(--rule);
-  background:rgba(255,255,255,.02);white-space:nowrap;
-  text-transform:uppercase;letter-spacing:.5px}
-td{padding:13px 15px;border-bottom:1px solid var(--rule-2);font-size:13px;
-  transition:background .15s}
+  padding:12px 14px;border-bottom:1px solid var(--rule);
+  background:#fff;white-space:nowrap;text-transform:uppercase;letter-spacing:.4px;
+  position:sticky;top:0;z-index:2}
+td{padding:12px 14px;border-bottom:1px solid var(--rule-2);font-size:13.5px;
+  transition:background .15s;color:var(--ink)}
 tr:last-child td{border-bottom:0}
 th.r,td.r{text-align:right}
-tbody tr:hover td{background:rgba(255,255,255,.03)}
-tr.total td{background:rgba(255,255,255,.04);font-weight:650;
-  border-top:1px solid var(--rule)}
-td.name{font-weight:560}
-td .eid{color:var(--ink-3);font-size:11.5px;margin-top:2px}
-td.net{font-weight:700;color:var(--ok)}
+tbody tr:hover td{background:var(--rule-2)}
+tr.total td{background:var(--surface-2);font-weight:650;border-top:1px solid var(--rule)}
+td.name{font-weight:600;display:flex;flex-direction:column;gap:2px}
+td .eid{color:var(--ink-3);font-size:11.5px;font-weight:400}
+td.net{font-weight:700;color:var(--ink)}
+td.num{font-variant-numeric:tabular-nums}
 
 .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;
   background:var(--flag-soft);color:var(--flag);border:1px solid var(--flag-rule);
   cursor:pointer;transition:var(--transition)}
-.pill:hover{background:rgba(229,165,75,.18);transform:scale(1.03)}
-.pill.none{background:var(--ok-soft);color:var(--ok);border-color:rgba(52,211,153,.2);cursor:default}
+.pill:hover{transform:scale(1.03)}
+.pill.none{background:var(--ok-soft);color:var(--ok);border-color:rgba(43,138,62,.2);cursor:default}
 .pill.none:hover{transform:none}
 
 /* ========== Notes / flags ========== */
-.note{border:1px solid var(--glass-border);border-radius:var(--radius);
-  padding:15px 18px;font-size:13px;background:var(--glass);margin:16px 0;
-  backdrop-filter:blur(16px);transition:var(--transition)}
+.note{border:1px solid var(--rule);border-radius:var(--radius);
+  padding:14px 16px;font-size:13px;background:#fff;margin:16px 0}
 .note.flag{background:var(--flag-soft);border-color:var(--flag-rule);color:var(--flag)}
-.note.stop{background:var(--surface-3);border-color:var(--ink-2);color:var(--ink)}
-.note.ok{background:var(--surface-2);border-color:var(--ink);color:var(--ink)}
+.note.stop{background:var(--stop-soft);border-color:rgba(224,49,49,.25);color:var(--stop)}
+.note.ok{background:var(--ok-soft);border-color:rgba(43,138,62,.2);color:var(--ok)}
 .note b{font-weight:650}
-.flagrow{display:grid;grid-template-columns:190px 96px 1fr;gap:14px;padding:12px 15px;
+.flagrow{display:grid;grid-template-columns:190px 96px 1fr;gap:14px;padding:10px 14px;
   border-bottom:1px solid var(--rule-2);font-size:12.5px;align-items:start}
 .flagrow:last-child{border-bottom:0}
 .fcode{font-weight:600;font-size:11px;color:var(--flag)}
-.empty{padding:50px 20px;text-align:center;color:var(--ink-3);font-size:13.5px}
+.empty{padding:48px 20px;text-align:center;color:var(--ink-3);font-size:13.5px}
 
 /* ========== Editors ========== */
 .grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
-.fld{display:flex;flex-direction:column;gap:6px}
+.fld{display:flex;flex-direction:column;gap:5px}
 .fld label{font-size:11.5px;color:var(--ink-3);text-transform:uppercase;
   letter-spacing:.4px;font-weight:500}
 .fld input{width:100%}
-.card{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border:1px solid var(--glass-border);border-radius:var(--radius);
-  padding:22px 24px;margin-bottom:14px;box-shadow:var(--shadow-sm);
-  transition:var(--transition)}
-.card:hover{border-color:rgba(255,255,255,.10)}
-.card h3{margin:0 0 4px;font-size:15px;font-weight:650;color:var(--ink)}
-.card .meta{color:var(--ink-3);font-size:12.5px;margin-bottom:16px;line-height:1.6}
-.rowhead{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:14px}
-textarea{width:100%;min-height:340px;border:1px solid var(--rule);border-radius:var(--radius-sm);
-  padding:14px;font:12.5px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;
-  background:var(--surface-2);color:var(--ink);resize:vertical;
-  transition:var(--transition)}
-textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.hint{font-size:12px;color:var(--ink-3);margin-top:8px;line-height:1.65}
-.chk{display:flex;align-items:center;gap:9px;font-size:13px}
-.chk input{width:16px;height:16px;accent-color:var(--accent);
-  border-radius:4px;cursor:pointer}
+.card{background:#fff;border:1px solid var(--rule);border-radius:var(--radius);
+  padding:20px 22px;margin-bottom:14px;box-shadow:var(--shadow-sm)}
+.card:hover{border-color:var(--ink-3)}
+.card h3{margin-top:0;margin-bottom:4px}
+.meta{font-size:12px;color:var(--ink-3);margin-bottom:14px}
+.hint{font-size:12px;color:var(--ink-3);margin-top:6px}
 
-/* ========== Money: translucent surfaces ========== */
-#v-money{position:relative}
-.aurora{display:none}
+/* ========== Checkbox ========== */
+.chk{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer}
+.chk input[type=checkbox]{width:16px;height:16px;accent-color:var(--ink)}
 
-.glass{background:var(--glass);backdrop-filter:blur(24px) saturate(150%);
-  -webkit-backdrop-filter:blur(24px) saturate(150%);
-  border:1px solid var(--glass-border);border-radius:var(--radius);
-  box-shadow:var(--shadow-sm);transition:var(--transition)}
-.glass:hover{border-color:rgba(255,255,255,.10)}
+/* ========== Segmented control ========== */
+.seg{display:flex;background:var(--surface-2);border:1px solid var(--rule);
+  border-radius:var(--radius-sm);overflow:hidden}
+.seg button{border:0;background:transparent;padding:7px 16px;font-size:12.5px;
+  font-weight:500;cursor:pointer;color:var(--ink-2);transition:var(--transition)}
+.seg button:hover{background:var(--rule-2);color:var(--ink)}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff;font-weight:600}
 
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:18px}
-.stat{padding:20px 22px;border-radius:var(--radius)}
-.stat .k{font-size:11.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.4px;font-weight:500}
-.stat .v{font-size:28px;font-weight:700;letter-spacing:-.8px;margin-top:6px;line-height:1.1}
-.stat .d{font-size:11.5px;color:var(--ink-3);margin-top:6px}
-.stat.lead{background:var(--surface-3);
-  border-color:var(--rule);position:relative;overflow:hidden}
-.stat.lead::after{display:none}
-.stat.lead .k{color:var(--ink)}.stat.lead .d{color:var(--ink-2)}
-.stat.lead .v{color:var(--ink)}
-
-.bars{display:flex;flex-direction:column;gap:10px;padding:20px 22px}
-.bar-row{display:grid;grid-template-columns:180px 1fr 110px;gap:14px;align-items:center;font-size:12.5px}
-.bar-track{height:8px;border-radius:6px;background:var(--surface-3);overflow:hidden}
-.bar-fill{height:100%;border-radius:6px;
-  background:var(--ink);
-  transition:width .6s cubic-bezier(.4,0,.2,1)}
-.bar-row.sal .bar-fill{background:var(--ink-3)}
-
-.gtable{overflow:hidden}
-.gtable table{width:100%}
-.gtable th{background:rgba(255,255,255,.02);border-bottom:1px solid var(--rule)}
-.gtable td{border-bottom:1px solid var(--rule-2)}
-.gtable tbody tr:hover td{background:rgba(255,255,255,.03)}
-
-.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;
-  background:var(--surface-3);color:var(--ink);border:1px solid var(--rule);
-  transition:var(--transition)}
-.tag.due{background:var(--surface-2);color:var(--ink-2);border-color:var(--rule)}
-
-.drop{border:2px dashed var(--rule);border-radius:var(--radius);padding:24px;
-  text-align:center;color:var(--ink-2);font-size:13px;cursor:pointer;
-  background:var(--surface);transition:var(--transition)}
-.drop:hover,.drop.over{border-color:var(--ink);background:var(--surface-2);
-  box-shadow:0 0 24px rgba(255,255,255,.05)}
-.drop b{color:var(--ink)}
-
-.mrow{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;
-  padding:17px 22px;border-bottom:1px solid var(--rule-2);cursor:pointer;
-  transition:var(--transition)}
-.mrow:last-child{border-bottom:0}
-.mrow:hover{background:rgba(255,255,255,.03)}
-.mrow .mk{font-weight:650;font-size:15px}
-.mrow .ms{font-size:12px;color:var(--ink-3);margin-top:3px}
-.mrow .mt{font-size:18px;font-weight:700;text-align:right;color:var(--ink)}
-
-.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--rule);
-  border-radius:var(--radius-sm);padding:3px;gap:2px}
-.seg button{border:0;background:none;padding:8px 16px;border-radius:var(--radius-xs);cursor:pointer;
-  font-size:13px;color:var(--ink-3);transition:var(--transition);font-weight:450}
-.seg button:hover{color:var(--ink-2)}
-.seg button[aria-pressed="true"]{background:var(--surface-3);color:var(--ink);font-weight:600;
-  box-shadow:0 2px 8px rgba(0,0,0,.2)}
+/* ========== Spinner ========== */
+.spin{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
 
 /* ========== Toast ========== */
-#toast{position:fixed;right:20px;bottom:20px;display:flex;flex-direction:column;gap:9px;z-index:60}
-.toast{background:var(--bg-3);color:var(--ink);padding:13px 18px;border-radius:var(--radius-sm);
-  font-size:13px;border:1px solid var(--glass-border);
-  box-shadow:0 10px 30px rgba(0,0,0,.35);max-width:420px;
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  animation:toastIn .35s cubic-bezier(.4,0,.2,1)}
-@keyframes toastIn{from{opacity:0;transform:translateY(12px) scale(.95)}to{opacity:1;transform:none}}
-.toast.bad{background:var(--surface-3);border-color:var(--ink-2);color:var(--ink)}
-.toast.good{background:var(--surface-2);border-color:var(--ink);color:var(--ink)}
+#toast{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--ink);color:#fff;padding:12px 20px;border-radius:var(--radius-sm);
+  font-size:13px;font-weight:500;box-shadow:0 6px 20px rgba(0,0,0,.2);
+  animation:toastIn .3s ease}
+.toast.good{background:var(--ok)}
+.toast.bad{background:var(--stop)}
+@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 
 /* ========== Modal ========== */
-.veil{position:fixed;inset:0;background:rgba(0,0,0,.55);backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);display:none;z-index:50;
-  align-items:center;justify-content:center;padding:24px}
+.veil{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;
+  display:none;align-items:center;justify-content:center;padding:24px}
 .veil.on{display:flex}
-.modal{background:rgba(10,10,10,.85);backdrop-filter:blur(40px);
-  -webkit-backdrop-filter:blur(40px);
-  border:1px solid var(--glass-border);
-  box-shadow:0 24px 80px rgba(0,0,0,.45);border-radius:var(--radius);
-  width:min(960px,100%);max-height:88vh;
-  display:flex;flex-direction:column;overflow:hidden;
-  animation:modalIn .3s cubic-bezier(.4,0,.2,1)}
-@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(12px)}to{opacity:1;transform:none}}
-.modal header{padding:17px 22px;border-bottom:1px solid var(--rule);
-  display:flex;justify-content:space-between;align-items:center}
-.modal header b{font-size:16px;font-weight:650}
-.modal .body{overflow:auto;padding:0}
-.modal .body.pad{padding:20px 22px}
-.modal iframe{width:100%;height:74vh;border:0;background:#fff;border-radius:0 0 var(--radius) var(--radius)}
-.x{background:none;border:0;font-size:22px;cursor:pointer;color:var(--ink-3);line-height:1;
-  transition:var(--transition);width:32px;height:32px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center}
-.x:hover{background:var(--surface-3);color:var(--ink);transform:rotate(90deg)}
+.modal{background:#fff;border-radius:var(--radius);width:100%;max-width:900px;
+  max-height:85vh;display:flex;flex-direction:column;box-shadow:0 16px 48px rgba(0,0,0,.18)}
+.modal header{display:flex;justify-content:space-between;align-items:center;
+  padding:16px 20px;border-bottom:1px solid var(--rule);min-height:54px}
+.modal header b{font-size:15px;font-weight:650}
+.modal .body{overflow-y:auto;flex:1}
+.modal .body.pad{padding:20px}
+.x{width:32px;height:32px;border:0;background:var(--rule-2);border-radius:50%;
+  font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--ink-2);transition:var(--transition)}
+.x:hover{background:var(--rule);color:var(--ink)}
 
-.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.25);
-  border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;
-  vertical-align:-2px;margin-right:8px}
-@keyframes sp{to{transform:rotate(360deg)}}
-@media (prefers-reduced-motion:reduce){.spin{animation:none}
-  .ambient::before,.ambient::after,.aurora::before,.aurora::after{animation:none}}
-
-  .hamburger, .mobile-topbar, .mobile-backdrop { display: none; }
-  
-@media(max-width:820px){
-  .shell { display: block; }
-  .mobile-topbar {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 16px 20px; border-bottom: 1px solid var(--rule);
-    background: rgba(5,5,5,0.9); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    position: sticky; top: 0; z-index: 90;
-  }
-  .mobile-topbar img { width: 26px; height: 26px; object-fit: contain; border-radius: 4px; }
-  .mobile-topbar b { font-size: 16px; font-weight: 700; color: var(--ink); display: block; }
-  .mobile-topbar span { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: 0.3px; }
-  .hamburger {
-    display: flex; align-items: center; justify-content: center;
-    background: none; border: 0; color: var(--ink); width: 40px; height: 40px;
-    cursor: pointer; margin-right: -10px;
-  }
-  .hamburger svg { width: 24px; height: 24px; }
-  
-  .rail {
-    position: fixed; top: 0; left: 0; bottom: 0; width: 280px; z-index: 1000;
-    transform: translateX(-100%); transition: transform 0.3s cubic-bezier(.4,0,.2,1);
-    background: var(--bg-2); border-right: 1px solid var(--rule);
-    height: 100vh; overflow-y: auto; padding-top: 26px;
-  }
-  .rail.open { transform: translateX(0); }
-  .mobile-backdrop {
-    position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px); z-index: 999;
-    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
-  }
-  .mobile-backdrop.open { opacity: 1; pointer-events: auto; display: block; }
-
-  .main{padding:20px 16px 80px}
-  .divisor{flex-direction:column;align-items:flex-start;gap:16px;padding:20px}
-  .eq{justify-content:space-between;width:100%}
-  .bar{flex-direction:column;align-items:stretch;gap:12px}
-  .bar > label, .bar > button, .bar > div{width:100%}
-  .bar select, .bar input{width:100%;min-width:auto}
-  .grid2{grid-template-columns:1fr}
-  .flagrow{grid-template-columns:1fr;gap:8px}
-  .stats{grid-template-columns:1fr}
-  .bar-row{grid-template-columns:140px 1fr 80px;font-size:11.5px}
-  #toast{left:20px;width:calc(100% - 40px);max-width:none}
-  .modal{margin:10px;width:calc(100% - 20px);max-height:calc(100vh - 20px)}
-  .veil{padding:0}
-}
-
-/* ========== Scrollbar ========== */
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:4px}
-::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,.2)}
+/* ========== AI box ========== */
+.ai-box{margin-top:16px;background:#fff;padding:14px;border-radius:var(--radius-sm);
+  border:1px solid var(--rule)}
+.ai-box summary{font-weight:600;cursor:pointer;color:var(--ink-2);font-size:13px}
+.ai-box[open] summary{margin-bottom:12px}
+/* ========== Chat bubbles ========== */
+.chat-bubble{max-width:80%;padding:12px 16px;border-radius:16px;
+  font-size:13.5px;line-height:1.55;word-wrap:break-word}
+.chat-bubble p{margin:0 0 10px 0}
+.chat-bubble p:last-child{margin:0}
+.chat-bubble ul, .chat-bubble ol{margin:0 0 10px 0;padding-left:20px}
+.chat-bubble li{margin-bottom:4px}
+.chat-bubble strong{font-weight:650}
+.chat-bubble pre{background:rgba(0,0,0,.05);padding:8px 12px;border-radius:8px;overflow-x:auto}
+.chat-bubble code{font-family:monospace;font-size:12px;background:rgba(0,0,0,.05);padding:2px 4px;border-radius:4px}
+.chat-bubble.ai{align-self:flex-start;background:var(--surface-2);
+  border:1px solid var(--rule);border-bottom-left-radius:4px;color:var(--ink)}
+.chat-bubble.ai pre{background:#fff;border:1px solid var(--rule-2)}
+.chat-bubble.user{align-self:flex-end;background:var(--ink);
+  color:#fff;border-bottom-right-radius:4px}
+.chat-bubble.user code, .chat-bubble.user pre{background:rgba(255,255,255,.1)}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-<div class="ambient"></div>
+
 <div class="aurora" id="aurora"></div>
 
 <div class="mobile-topbar">
   <div style="display:flex; align-items:center; gap:12px">
-    <img src="/static/assets/your-logo.png" alt="Logo" onerror="this.style.display='none'">
+    <img src="/static/assets/logo.png" alt="Logo" style="width:24px;height:24px;border-radius:4px">
     <div><b>Payroll</b><span>Genartml Pvt. Ltd.</span></div>
   </div>
   <button class="hamburger" id="menuToggle">
@@ -389,14 +276,17 @@ textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft
       <!-- To use your custom logo: -->
       <!-- 1. Save your logo file inside the 'static/assets' folder (e.g. static/assets/logo.png) -->
       <!-- 2. Update the 'src' below to point to it -->
-      <img src="/static/assets/your-logo.png" alt="Logo" style="width:26px; height:26px; object-fit:contain; border-radius:4px;" onerror="this.style.display='none'">
+      <img src="/static/assets/logo.png" alt="Logo" style="width:28px;height:28px;object-fit:contain;border-radius:6px;">
       <div><b>Payroll</b><span>Genartml Pvt. Ltd.</span></div>
     </div>
     <nav class="nav" id="nav">
       <button data-v="run" aria-current="true"><i></i>Run payroll</button>
+      <button data-v="chat"><i></i>HR Assistant</button>
       <button data-v="money"><i></i>Money</button>
       <button data-v="people"><i></i>Employees</button>
       <button data-v="rules"><i></i>Pay rules</button>
+      <button data-v="branding"><i></i>Payslip Theme</button>
+      <button data-v="compliance"><i></i>Compliance</button>
       <button data-v="cal"><i></i>Holidays</button>
       <button data-v="files"><i></i>Timesheets</button>
       <button data-v="check"><i></i>Self-test</button>
@@ -425,7 +315,84 @@ textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft
         <button class="btn ghost" id="otBtn">Review overtime</button>
       </div>
 
+      <div class="card ai-card" style="margin-top: 24px; padding: 24px; background: #fff; border: 1px solid var(--rule); border-radius: 16px; display: flex; flex-direction: column; gap: 16px; position: relative; overflow: hidden;">
+        <!-- decorative gradient in corner -->
+        <div style="position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: radial-gradient(circle, rgba(10,10,10,0.03) 0%, transparent 70%); border-radius: 50%;"></div>
+        
+        <div style="display: flex; align-items: flex-start; justify-content: space-between;">
+          <div>
+            <h3 style="display: flex; align-items: center; gap: 8px; margin: 0; font-size: 16px; color: var(--ink);">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+              AI PDF Parser
+              <span class="pill" style="margin-left: 6px; font-size: 10px; padding: 2px 8px; font-weight: 600; background: var(--ink); color: #fff; border: none;">BETA</span>
+            </h3>
+            <p style="margin: 6px 0 0 0; font-size: 13px; color: var(--ink-2); max-width: 480px; line-height: 1.5; font-weight: 400; text-transform: none;">
+              Upload raw biometric or timesheet PDFs. Our AI automatically extracts hours, overtime, and leave data without manual entry.
+            </p>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: flex-end; gap: 16px; flex-wrap: wrap; margin-top: 8px;">
+          <div class="fld" style="flex: 1; min-width: 250px;">
+            <label style="color: var(--ink); font-weight: 500;">Timesheet Report (.pdf)</label>
+            <div style="position: relative;">
+              <input type="file" id="pdfReport" accept=".pdf" style="position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2;" onchange="this.nextElementSibling.querySelector('span').textContent = this.files[0]?.name || 'Select PDF file...'; this.nextElementSibling.style.borderColor = 'var(--ink)'">
+              <div style="display: flex; align-items: center; justify-content: space-between; padding: 0 14px; height: 40px; background: #fff; border: 1px dashed var(--ink-3); border-radius: 8px; font-size: 13.5px; color: var(--ink-2); transition: all 0.2s;">
+                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80%;">Select PDF file...</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+              </div>
+            </div>
+          </div>
+          
+          <button class="btn" id="aiGo" style="height: 40px; padding: 0 24px;">Analyze PDF</button>
+        </div>
+      </div>
+
       <div id="runOut"></div>
+    </section>
+
+    
+    <!-- ============ CHAT ============ -->
+    <section id="v-chat" hidden>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+        <div>
+          <h1 style="display:flex;align-items:center;gap:8px">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            Genartml HR Assistant
+          </h1>
+          <p class="sub">Ask questions about policies, leave balances, and custom calculations.</p>
+        </div>
+        <button class="btn ghost" id="newChatBtn" style="color:var(--ink-2);border:1px solid var(--rule)">New Chat</button>
+      </div>
+
+      <div class="card" style="padding:0;overflow:hidden;height:70vh;min-height:500px;display:flex;flex-direction:row;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,0.03);">
+        
+        <!-- Sidebar -->
+        <div style="width:250px;border-right:1px solid var(--rule);background:#fafafa;display:flex;flex-direction:column;">
+            <div style="padding:16px;border-bottom:1px solid var(--rule);font-weight:600;font-size:14px;color:var(--ink-2)">Chat History</div>
+            <div id="chatSessions" style="flex:1;overflow-y:auto;padding:8px;display:flex;flex-direction:column;gap:4px">
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div style="flex:1;display:flex;flex-direction:column;">
+            <!-- Messages Area -->
+            <div id="chatMessages" style="flex:1;overflow-y:auto;padding:32px 24px;display:flex;flex-direction:column;gap:16px;background:var(--bg)">
+            <div class="chat-bubble ai">Hello! I am your Genartml HR Assistant. I have secure access to your company policies, employee leave balances, and holidays. How can I help you today?</div>
+            </div>
+            
+            <!-- Input Area -->
+            <div style="padding:20px;border-top:1px solid var(--rule);background:#fff;display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;gap:12px;align-items:flex-end;background:var(--surface-2);border:1px solid var(--rule);border-radius:24px;padding:6px 6px 6px 16px;transition:border-color 0.2s" id="chatInputWrapper">
+                <textarea id="chatInput" rows="1" placeholder="Ask about employee leaves, policy calculations..." style="flex:1;min-height:24px;max-height:150px;resize:none;background:transparent;border:none;padding:12px 0;font-size:14px;outline:none;line-height:1.5" oninput="this.style.height='';this.style.height=this.scrollHeight+'px'" onfocus="document.getElementById('chatInputWrapper').style.borderColor='var(--ink)'" onblur="document.getElementById('chatInputWrapper').style.borderColor='var(--rule)'" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();document.getElementById('sendChatBtn').click()}"></textarea>
+                <button id="sendChatBtn" class="btn" style="border-radius:20px;width:40px;height:40px;padding:0;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </div>
+            <div style="font-size:11px;color:var(--ink-3);text-align:center;">The assistant can make mistakes. Verify important calculations.</div>
+            </div>
+        </div>
+      </div>
     </section>
 
     <!-- ============ MONEY ============ -->
@@ -493,6 +460,79 @@ textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft
       <div class="bar"><button class="btn" id="runTest">Run self-test</button></div>
       <div id="testOut"></div>
     </section>
+
+    <!-- ============ BRANDING ============ -->
+    <section id="v-branding" hidden>
+      <h1>Payslip Theme</h1>
+      <p class="sub">Customize how your generated PDF and HTML payslips look.</p>
+      
+      <div class="card">
+        <div style="display:flex; flex-direction:column; gap:16px;">
+          <label class="f">Company Name
+            <input type="text" id="b-comp-name" placeholder="GENARTML PVT. LTD.">
+          </label>
+          <div style="display:flex; gap:16px;">
+            <label class="f" style="flex:1;">CIN
+              <input type="text" id="b-cin" placeholder="U74909GJ2025PTC168491">
+            </label>
+            <label class="f" style="flex:1;">EPF Reg. No.
+              <input type="text" id="b-epf" placeholder="N/A">
+            </label>
+          </div>
+          <label class="f">Theme Color (Hex)
+            <div style="display:flex; gap:8px;">
+              <input type="color" id="b-color-picker" style="width:40px; padding:2px; height:40px;">
+              <input type="text" id="b-theme-color" placeholder="#18181b" style="flex:1;">
+            </div>
+          </label>
+          <label class="f">Footer Note
+            <input type="text" id="b-footer" placeholder="This is a system-generated payslip.">
+          </label>
+          <label style="display:flex; align-items:center; gap:8px; font-size:13px;">
+            <input type="checkbox" id="b-show-leave" checked>
+            Show leave balances on payslip
+          </label>
+        </div>
+      </div>
+      <div class="bar" style="margin-top:16px;"><button class="btn" id="saveBranding">Save Theme</button></div>
+    </section>
+
+    <!-- ============ COMPLIANCE ============ -->
+    <section id="v-compliance" hidden>
+      <h1>Statutory Compliance</h1>
+      <p class="sub">Manage automated legal tax deductions (EPF, ESI, TDS) directly from the engine.</p>
+      
+      <div class="card" style="margin-bottom: 16px;">
+        <h3>Provident Fund (EPF)</h3>
+        <div class="meta">For companies with >20 employees, a 12% deduction from Basic Salary is legally required for the employee's retirement fund. To show this on the payslip, ensure you have added the employee's UAN (Universal Account Number) in the Employees tab.</div>
+        <label style="display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600; margin-top:12px;">
+          <input type="checkbox" id="c-epf-enable">
+          Enable 12% EPF Deduction Automatically
+        </label>
+      </div>
+
+      <div class="card" style="margin-bottom: 16px;">
+        <h3>Employees' State Insurance (ESI)</h3>
+        <div class="meta">If an employee earns ₹21,000 or less per month in gross salary, you must deduct 0.75% for state healthcare. (The company also contributes 3.25%).</div>
+        <label style="display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600; margin-top:12px;">
+          <input type="checkbox" id="c-esi-enable">
+          Enable 0.75% ESI Deduction (for gross pay <= ₹21k)
+        </label>
+      </div>
+
+      <div class="card">
+        <h3>Income Tax (TDS)</h3>
+        <div class="meta">Tax Deducted at Source (TDS). Rather than dynamically calculating complex tax slabs (Old vs New regime), enable this to allow setting a fixed monthly TDS deduction amount per employee in the Employees tab.</div>
+        <label style="display:flex; align-items:center; gap:8px; font-size:14px; font-weight:600; margin-top:12px;">
+          <input type="checkbox" id="c-tds-enable">
+          Enable custom TDS deduction per employee
+        </label>
+      </div>
+
+      <div class="bar" style="margin-top:16px;">
+        <button class="btn" id="saveCompliance">Save Settings</button>
+      </div>
+    </section>
   </main>
 </div>
 
@@ -552,7 +592,7 @@ $('#nav').onclick=e=>{const b=e.target.closest('button');if(!b || b.id === 'logo
   $$('main section').forEach(s=>s.hidden=true);
   $('#v-'+b.dataset.v).hidden=false;
   $('#aurora').classList.toggle('on',b.dataset.v==='money');
-  ({people:loadEmps,rules:loadRules,cal:loadCal,files:loadFiles,money:loadMoney})[b.dataset.v]?.();};
+  ({people:loadEmps,rules:loadRules,branding:loadBranding,compliance:loadCompliance,cal:loadCal,files:loadFiles,chat:loadChat,money:loadMoney})[b.dataset.v]?.();};
 
 function modal(title,html,actions=''){$('#mTitle').textContent=title;
   $('#mBody').innerHTML=html;$('#mBody').className='body'+(html.includes('<iframe')?'':' pad');
@@ -660,6 +700,29 @@ $('#go').onclick=async()=>{
     toast(e.message,'bad');}
   btn.disabled=false;btn.textContent='Run payroll';};
 
+$('#aiGo').onclick=async()=>{
+  const btn=$('#aiGo');
+  const fileInput = $('#pdfReport');
+  if(!fileInput.files.length){toast('Select a PDF report first','bad');return;}
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span>Analyzing';
+  
+  try{
+    const fd = new FormData();
+    fd.append('file', fileInput.files[0]);
+    await fetch('/api/timesheets', {method: 'POST', body: fd}); // raw fetch so we don't need to await json if ok
+    
+    const d=await api('/api/ai_run',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        pdf_file: fileInput.files[0].name, 
+        month: $('#mo').value
+      })});
+    LAST=d;renderRun(d);toast('PDF Analyzed successfully','good');
+  }catch(e){$('#runOut').innerHTML=`<div class="note stop"><b>AI stopped.</b><br>${esc(e.message)}</div>`;
+    toast(e.message,'bad');}
+  btn.disabled=false;btn.textContent='Analyze PDF';};
+
+
+
 function renderRun(d){
   const t=d.totals;
   const body=d.rows.map(r=>`<tr>
@@ -762,8 +825,8 @@ async function downloadSlip(empId){
 /* ---------------- employees ---------------- */
 const EF=[['name','Full name'],['emp_id','Employee ID'],['ctc_monthly','Monthly CTC (₹)'],
   ['designation','Designation'],['department','Department'],['date_of_joining','Joined (YYYY-MM-DD)'],
-  ['exit_date','Last day (YYYY-MM-DD)'],['pan','PAN'],['bank_name','Bank'],
-  ['bank_ac','Account number'],['ifsc','IFSC']];
+  ['exit_date','Last day (YYYY-MM-DD)'],['pan','PAN'],['uan','UAN'],['tds_monthly','Monthly TDS (₹)'],
+  ['bank_name','Bank'],['bank_ac','Account number'],['ifsc','IFSC']];
 
 async function loadEmps(){EMPS=await api('/api/config/employees');drawEmps();}
 function drawEmps(){
@@ -784,7 +847,7 @@ function drawEmps(){
     if(inp.dataset.lv){e.leave_opening=e.leave_opening||{};e.leave_opening[inp.dataset.lv]=Number(inp.value)||0;return;}
     const k=inp.dataset.k;
     if(k==='aliases')e.aliases=inp.value.split(',').map(s=>s.trim()).filter(Boolean);
-    else if(k==='ctc_monthly')e.ctc_monthly=Number(inp.value)||0;
+    else if(k==='ctc_monthly'||k==='tds_monthly')e[k]=Number(inp.value)||0;
     else if(inp.value==='')delete e[k];
     else e[k]=inp.value;});
   $$('#empList [data-rm]').forEach(b=>b.onclick=async()=>{const ok=await confirmModal('Remove '+(EMPS[+b.dataset.rm].name||'this employee')+'?');if(!ok)return;EMPS.splice(+b.dataset.rm,1);drawEmps();});
@@ -825,8 +888,10 @@ function drawRules(){
       <div class="fld"><label>Hour rounding</label><select data-o="rounding">
         <option value="none"${o.rounding==='none'?' selected':''}>Pay exact approved hours</option>
         <option value="floor_30min"${o.rounding==='floor_30min'?' selected':''}>Round down to 30 minutes</option>
-      </select></div></div>
-    <div class="hint">Rounding only ever goes down, so it can never pay more than what was approved.</div></div>
+      </select></div>
+      <div class="fld"><label>Excessive OT Warning (%)</label><input type="number" step="0.01" data-f="ot_ratio_warn_pct" value="${RULES.flags.ot_ratio_warn_pct||0.3}"></div>
+    </div>
+    <div class="hint">Rounding only ever goes down. Excessive warning triggers if OT exceeds X% of basic pay (e.g. 0.3 = 30%).</div></div>
 
   <div class="card"><h3>Pay factor by day type</h3>
     <div class="meta">What each day is worth. A type not listed here stops the run — the
@@ -844,7 +909,9 @@ function drawRules(){
 
   <div class="card"><h3>When someone leaves mid-month</h3>
     <div class="meta">Basic always follows actual days worked. These control the fixed parts.</div>
-    <label class="chk"><input type="checkbox" data-x="prorate_allowance"
+    <label class="chk"><input type="checkbox" data-f="static_base_pay"
+      ${RULES.flags.static_base_pay!==false?'checked':''}> Base salary is ALWAYS static (not reduced by leaves)</label>
+    <label class="chk" style="margin-top:10px"><input type="checkbox" data-x="prorate_allowance"
       ${RULES.exit_policy.prorate_allowance?'checked':''}> Pro-rate the fixed allowance</label>
     <label class="chk" style="margin-top:10px"><input type="checkbox" data-x="prorate_incentive"
       ${RULES.exit_policy.prorate_incentive?'checked':''}> Pro-rate the performance incentive</label></div>
@@ -859,6 +926,7 @@ function drawRules(){
   $$('[data-wd]').forEach(i=>i.onchange=()=>RULES.pay_factors[i.dataset.wd].counts_working_day=i.checked);
   $$('[data-pt]').forEach(i=>i.oninput=()=>RULES.professional_tax_gujarat[+i.dataset.pt].tax=Number(i.value));
   $$('[data-x]').forEach(i=>i.onchange=()=>RULES.exit_policy[i.dataset.x]=i.checked);
+  $$('[data-f]').forEach(i=>i.onchange=()=>RULES.flags[i.dataset.f]=i.checked);
   $('#saveRules').onclick=()=>saveRules();
   $('#afterSave').onclick=async()=>{if(await saveRules()){$$('#nav button')[5].click();$('#runTest').click();}};
 }
@@ -929,6 +997,135 @@ $('#runTest').onclick=async()=>{
     toast(d.passed?'Self-test passed':'Self-test failed',d.passed?'good':'bad');
   }catch(e){toast(e.message,'bad');}
   b.disabled=false;b.textContent='Run self-test';};
+
+
+
+/* ---------------- chat ---------------- */
+let CHAT_DATA = { sessions: {} };
+let ACTIVE_SESSION = 'default';
+
+async function loadChat() {
+  try {
+    const res = await api('/api/chat/history');
+    CHAT_DATA = res.chat_data || { sessions: {} };
+    if (!CHAT_DATA.sessions[ACTIVE_SESSION]) {
+        ACTIVE_SESSION = Object.keys(CHAT_DATA.sessions)[0] || 'default';
+    }
+    renderChatSessions();
+    renderChatHistory();
+  } catch(e) {}
+}
+
+function renderChatSessions() {
+  const container = $('#chatSessions');
+  if (!container) return;
+  
+  let html = '';
+  const entries = Object.entries(CHAT_DATA.sessions || {});
+  entries.reverse(); // Newest first
+  
+  entries.forEach(([id, session]) => {
+      const isActive = id === ACTIVE_SESSION;
+      html += `<div style="padding:8px 12px;border-radius:8px;cursor:pointer;font-size:13.5px;display:flex;align-items:center;justify-content:space-between;${isActive ? 'background:var(--ink);color:#fff;' : 'color:var(--ink);hover:background:#eee;'}" onclick="switchChatSession('${id}')">
+        <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;">${esc(session.title || 'New Chat')}</span>
+        ${isActive ? `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" onclick="deleteSession(event, '${id}')" style="opacity:0.7;cursor:pointer;"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>` : ''}
+      </div>`;
+  });
+  container.innerHTML = html;
+}
+
+window.switchChatSession = (id) => {
+    ACTIVE_SESSION = id;
+    renderChatSessions();
+    renderChatHistory();
+};
+
+window.deleteSession = async (e, id) => {
+    e.stopPropagation();
+    if(confirm('Delete this chat?')) {
+        await api('/api/chat/clear', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({session_id: id})});
+        delete CHAT_DATA.sessions[id];
+        ACTIVE_SESSION = Object.keys(CHAT_DATA.sessions)[0] || 'default';
+        renderChatSessions();
+        renderChatHistory();
+    }
+};
+
+$('#newChatBtn').onclick = () => {
+    const newId = 'session-' + Date.now();
+    CHAT_DATA.sessions[newId] = { title: "New Chat", messages: [] };
+    switchChatSession(newId);
+};
+
+function renderChatHistory() {
+  const container = $('#chatMessages');
+  if(!container) return;
+  const session = CHAT_DATA.sessions[ACTIVE_SESSION] || { messages: [] };
+  const history = session.messages || [];
+  
+  let html = `<div class="chat-bubble ai">Hello! I am your Genartml HR Assistant. I have secure access to your company policies, employee leave balances, and holidays. How can I help you today?</div>`;
+  history.forEach(msg => {
+    const cls = msg.role === 'user' ? 'user' : 'ai';
+    const content = msg.role === 'user' ? esc(msg.content) : marked.parse(msg.content);
+    html += `<div class="chat-bubble ${cls}">${content}</div>`;
+  });
+  container.innerHTML = html;
+  container.scrollTop = container.scrollHeight;
+}
+
+$('#sendChatBtn').onclick = async () => {
+  const input = $('#chatInput');
+  const msg = input.value.trim();
+  if (!msg) return;
+  
+  if (!CHAT_DATA.sessions[ACTIVE_SESSION]) {
+      CHAT_DATA.sessions[ACTIVE_SESSION] = { title: msg.substring(0, 30) + '...', messages: [] };
+  }
+  
+  const container = $('#chatMessages');
+  container.innerHTML += `<div class="chat-bubble user">${esc(msg)}</div>`;
+  input.value = '';
+  input.style.height = '40px';
+  container.scrollTop = container.scrollHeight;
+  
+  const typingId = 'typing-' + Date.now();
+  container.innerHTML += `<div id="${typingId}" class="chat-bubble ai" style="color:var(--ink-3)">Thinking <span class="spin" style="border-color:var(--ink-3) transparent var(--ink-3) transparent;width:14px;height:14px;border-width:2px"></span></div>`;
+  container.scrollTop = container.scrollHeight;
+  
+  try {
+    const res = await api('/api/chat', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ message: msg, session_id: ACTIVE_SESSION })
+    });
+    
+    $('#'+typingId)?.remove();
+    if (res.reply) {
+      if (!CHAT_DATA.sessions[ACTIVE_SESSION]) CHAT_DATA.sessions[ACTIVE_SESSION] = { messages: [] };
+      CHAT_DATA.sessions[ACTIVE_SESSION].messages = res.history;
+      
+      // update title
+      if (res.history.length === 2 && CHAT_DATA.sessions[ACTIVE_SESSION].title === "New Chat") {
+          CHAT_DATA.sessions[ACTIVE_SESSION].title = msg.substring(0, 30) + '...';
+      }
+      
+      renderChatSessions();
+      renderChatHistory();
+    } else if (res.error) {
+       toast(res.error, 'bad');
+    }
+  } catch(e) {
+    const el = $('#'+typingId);
+    if(el) el.innerHTML = '<span style="color:var(--stop)">Failed to connect to AI.</span>';
+  }
+};
+
+$('#chatInput').onkeydown = (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    $('#sendChatBtn').click();
+  }
+};
 
 
 /* ---------------- money ---------------- */
@@ -1183,6 +1380,89 @@ async function drawDb(){
   if(off)off.onclick=async()=>{await api('/api/finance/disconnect',{method:'POST'});
     toast('Back to the local database');drawDb();};
 }
+
+/* ---------------- branding ---------------- */
+async function loadBranding() {
+  try {
+    const b = await api('/api/config/branding');
+    $('#b-comp-name').value = b.company_name || '';
+    $('#b-cin').value = b.cin || '';
+    $('#b-epf').value = b.epf || '';
+    $('#b-theme-color').value = b.theme_color || '#18181b';
+    $('#b-color-picker').value = b.theme_color || '#18181b';
+    $('#b-footer').value = b.footer_text || '';
+    $('#b-show-leave').checked = b.show_leave_balance !== false;
+  } catch(e) {}
+}
+
+$('#b-color-picker').oninput = e => $('#b-theme-color').value = e.target.value;
+$('#b-theme-color').oninput = e => $('#b-color-picker').value = e.target.value;
+
+$('#saveBranding').onclick = async () => {
+  const btn = $('#saveBranding');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>Saving';
+  
+  const b = {
+    company_name: $('#b-comp-name').value,
+    cin: $('#b-cin').value,
+    epf: $('#b-epf').value,
+    theme_color: $('#b-theme-color').value,
+    footer_text: $('#b-footer').value,
+    show_leave_balance: $('#b-show-leave').checked
+  };
+  
+  try {
+    const r = await api('/api/config/branding', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(b)
+    });
+    toast(r.message, 'good');
+  } catch(e) {
+    toast(e.message, 'bad');
+  }
+  btn.disabled = false;
+  btn.textContent = 'Save Theme';
+};
+
+/* ---------------- compliance ---------------- */
+async function loadCompliance() {
+  try {
+    const c = await api('/api/config/compliance');
+    $('#c-epf-enable').checked = c.epf_enabled;
+    $('#c-esi-enable').checked = c.esi_enabled;
+    $('#c-tds-enable').checked = c.tds_enabled;
+  } catch(e) {}
+}
+
+$('#saveCompliance').onclick = async () => {
+  const btn = $('#saveCompliance');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span>Saving';
+  
+  const c = {
+    epf_enabled: $('#c-epf-enable').checked,
+    epf_rate: 0.12,
+    esi_enabled: $('#c-esi-enable').checked,
+    esi_rate: 0.0075,
+    esi_threshold: 21000,
+    tds_enabled: $('#c-tds-enable').checked
+  };
+  
+  try {
+    const r = await api('/api/config/compliance', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(c)
+    });
+    toast(r.message, 'good');
+  } catch(e) {
+    toast(e.message, 'bad');
+  }
+  btn.disabled = false;
+  btn.textContent = 'Save Settings';
+};
 
 /* ---------------- boot ---------------- */
 (async()=>{try{await loadTs();await showDivisor();}catch(e){toast(e.message,'bad');}})();

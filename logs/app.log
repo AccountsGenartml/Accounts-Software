@@ -218,3 +218,67 @@ Traceback (most recent call last):
     raise NotFound()
 werkzeug.exceptions.NotFound: 404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.
  [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:70]
+2026-09-11 15:32:39,867 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:118]
+2026-09-11 15:32:39,875 INFO: Starting local development server [in /Users/dakshsuthar/Downloads/genartml-payroll-4/app.py:732]
+2026-09-24 13:29:12,985 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:118]
+2026-09-24 13:29:12,993 INFO: Starting local development server [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:797]
+2026-09-24 13:29:33,733 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:118]
+2026-09-24 13:29:33,741 INFO: Starting local development server [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:797]
+2026-09-24 13:29:49,424 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:118]
+2026-09-24 13:29:49,431 INFO: Starting local development server [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:797]
+2026-09-29 13:49:13,154 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:118]
+2026-09-29 13:49:42,906 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:118]
+2026-09-29 13:50:05,068 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:118]
+2026-09-29 13:50:06,433 ERROR: Unhandled Exception: [Errno 2] No such file or directory: '/Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/config/chat_history.json'
+Traceback (most recent call last):
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py", line 849, in chat_history
+    history = _json("chat_history")
+  File "/Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/db.py", line 50, in get_json
+    local_data = json.loads((HERE / "config" / f"{config_name}.json").read_text())
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1256, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1242, in open
+    return io.open(self, mode, buffering, encoding, errors, newline,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1110, in _opener
+    return self._accessor.open(self, flags, mode)
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/config/chat_history.json'
+ [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:126]
+2026-09-29 13:50:37,383 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:118]
+2026-09-29 13:50:38,918 ERROR: Unhandled Exception: 404 Client Error: Not Found for url: https://dzcwbmtnxxagrjwbtgqo.supabase.co/rest/v1/configs
+Traceback (most recent call last):
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+  File "/Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py", line 849, in chat_history
+    history = _json("chat_history")
+  File "/Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/db.py", line 57, in get_json
+    save_json(config_name, local_data)
+  File "/Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/db.py", line 79, in save_json
+    res.raise_for_status()
+  File "/Users/dakshsuthar/Library/Python/3.9/lib/python/site-packages/requests/models.py", line 1026, in raise_for_status
+    raise HTTPError(http_error_msg, response=self)
+requests.exceptions.HTTPError: 404 Client Error: Not Found for url: https://dzcwbmtnxxagrjwbtgqo.supabase.co/rest/v1/configs
+ [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:126]
+2026-09-29 13:57:03,185 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:118]
+2026-09-29 13:57:03,260 INFO: Starting local development server [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:868]
+2026-09-29 13:57:11,805 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:118]
+2026-09-29 13:57:11,856 INFO: Starting local development server [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:868]
+2026-09-29 13:57:41,396 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:118]
+2026-09-29 13:57:41,462 INFO: Starting local development server [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:868]
+2026-09-29 14:18:49,606 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:118]
+2026-09-29 14:18:49,679 INFO: Starting local development server [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:868]
+2026-09-29 14:40:29,426 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:118]
+2026-09-29 14:40:29,505 INFO: Starting local development server [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:878]
+2026-09-29 14:41:59,765 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:118]
+2026-09-29 14:41:59,856 INFO: Starting local development server [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:878]
+2026-09-29 14:48:00,154 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:118]
+2026-09-29 14:48:00,241 INFO: Starting local development server [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:878]
+2026-09-29 14:49:08,340 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:118]
+2026-09-29 14:49:08,427 INFO: Starting local development server [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:882]
+2026-09-29 14:52:01,356 INFO: Genartml Payroll startup [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:118]
+2026-09-29 14:52:01,441 INFO: Starting local development server [in /Users/dakshsuthar/Library/Mobile Documents/com~apple~CloudDocs/genartml-payroll-4/app.py:903]

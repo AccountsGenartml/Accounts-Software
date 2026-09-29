@@ -28,12 +28,13 @@ from flask import (
     jsonify,
     redirect,
     send_from_directory,
+    send_file,
 )
 
 
 from engine import CompanyCalendar, Rules, run_payroll, PayrollError
 from timesheet import read_workbook
-from payslip import render_all, render_payslip, CSS, MONTHS
+from payslip import render_all, render_payslip, MONTHS, get_branding, generate_css
 from run_payroll import write_summary, match_employee
 import finance as FIN
 
@@ -94,7 +95,7 @@ log_file = LOGS / "app.log"
 @app.after_request
 def set_security_headers(response):
     # Content Security Policy – allow self and inline scripts (required for existing inline JS)
-    csp = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;"
+    csp = "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:;"
     response.headers["Content-Security-Policy"] = csp
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["X-Frame-Options"] = "DENY"
@@ -126,15 +127,8 @@ def handle_exception(e):
     return jsonify(error="An internal server error occurred. Please check the logs."), 500
 
 
-def _json(path):
-    return json.loads(Path(path).read_text())
-
-
-def _save_json(path, data):
-    p = Path(path)
-    if p.exists():
-        shutil.copy(p, p.with_suffix(p.suffix + ".bak"))
-    p.write_text(json.dumps(data, indent=2, ensure_ascii=False))
+from db import get_json as _json, save_json as _save_json
+from storage_bridge import upload_file_to_bucket, download_file_from_bucket
 
 
 def _dec(o):
@@ -207,18 +201,18 @@ def static_files(f):
 
 @app.get("/api/config/<name>")
 def get_config(name):
-    if name not in ("rules", "employees", "calendar_2026"):
+    if name not in ("rules", "employees", "calendar_2026", "branding", "compliance"):
         return jsonify(error="Unknown config"), 404
-    return jsonify(_json(CONFIG / f"{name}.json"))
+    return jsonify(_json(name))
 
 
 @app.post("/api/config/<name>")
 def set_config(name):
-    if name not in ("rules", "employees", "calendar_2026"):
+    if name not in ("rules", "employees", "calendar_2026", "branding", "compliance"):
         return jsonify(error="Unknown config"), 404
     try:
         data = request.get_json(force=True)
-        _save_json(CONFIG / f"{name}.json", data)
+        _save_json(name, data)
         Rules()
         CompanyCalendar()
         return jsonify(ok=True, message="Saved. A backup of the previous version was kept.")
@@ -283,7 +277,7 @@ def preview():
     try:
         rules = Rules()
         sheets = read_workbook(path, rules, year, month)
-        master = _json(CONFIG / "employees.json")
+        master = _json("employees")
         tabs = []
         for tab, data in sheets.items():
             emp = match_employee(tab, data["name"], master)
@@ -308,9 +302,9 @@ def _prepare(body):
     year, month = (int(x) for x in body["month"].split("-"))
     rules, cal = Rules(), CompanyCalendar()
     bd = cal.breakdown(year, month)
-    wd = int(body.get("working_days_override") or bd["working_days"])
+    wd = int(body.get("working_days_override") or bd["paid_days"])
     sheets = read_workbook(path, rules, year, month)
-    master = _json(CONFIG / "employees.json")
+    master = _json("employees")
 
     excluded = set(body.get("exclude_ot_dates") or [])
     pairs, missing = [], []
@@ -378,7 +372,7 @@ def run():
             })
         return jsonify(
             month=f"{MONTHS[month]} {year}", month_key=f"{year}-{month:02d}",
-            breakdown=_dec(bd), working_days=wd,
+            breakdown=_dec(bd), working_days=wd, paid_days=wd,
             override=bool(body.get("working_days_override")),
             rows=rows,
             totals={k: round(sum(r[k] for r in rows), 2) for k in
@@ -392,6 +386,76 @@ def run():
         traceback.print_exc()
         return jsonify(error=f"{type(e).__name__}: {e}"), 400
 
+@app.post("/api/ai_run")
+def ai_run():
+    body = request.get_json(force=True)
+    pdf_path = UPLOADS / Path(body["pdf_file"]).name
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        return jsonify(error="GEMINI_API_KEY environment variable is not set on the server."), 400
+        
+    year, month = (int(x) for x in body["month"].split("-"))
+    master = _json("employees")
+    
+    if not pdf_path.exists():
+        download_file_from_bucket("timesheets", pdf_path.name, pdf_path)
+    if not pdf_path.exists():
+        return jsonify(error="PDF report not found"), 400
+    try:
+        from ai_parser import extract_payroll_from_pdf, convert_to_standard_results
+        with open(pdf_path, 'rb') as f:
+            pdf_bytes = f.read()
+            
+        ai_data = extract_payroll_from_pdf(pdf_bytes, api_key)
+        results = convert_to_standard_results(ai_data, year, month, master)
+        
+        # Save to disk as preview
+        outdir = OUT / f"{year}-{month:02d}"
+        outdir.mkdir(parents=True, exist_ok=True)
+        render_all(results, year, month, outdir / "payslips.html")
+        upload_file_to_bucket("payslips", outdir / "payslips.html", f"{year}-{month:02d}_payslips.html")
+        
+        rows = []
+        for r in results:
+            e = r["employee"]
+            rows.append({
+                "name": e["name"], "emp_id": e.get("emp_id"),
+                "ctc": float(e["ctc_monthly"]),
+                "per_day": float(r["per_day"]), "per_hour": float(r["per_hour"]),
+                "ot_rate": float(r["ot_rate"]),
+                "payable_days": float(r["payable_days"]),
+                "lop_days": float(r["lop_days"]),
+                "ot_hours": float(r["ot_hours"]),
+                "base_earned": float(r["base_earned"]),
+                "ot_payable": float(r["ot_payable"]),
+                "allowance": float(r["allowance_paid"]),
+                "incentive": float(r["incentive_paid"]),
+                "gross": float(r["gross"]),
+                "ptax": float(r["professional_tax"]),
+                "net": float(r["net_pay"]),
+                "month_fraction": float(r["month_fraction"]),
+                "flags": r["flags"],
+                "type_counts": r["type_counts"],
+            })
+            
+        # Hardcode some dummy breakdown data since we bypass timesheet calendar calculation
+        bd = {"paid_days": 20, "working_days": 20, "calendar_days": 30, "weekly_offs": 8, "public_holidays": 0}
+        
+        return jsonify(
+            month=f"{MONTHS[month]} {year}", month_key=f"{year}-{month:02d}",
+            breakdown=_dec(bd), working_days=20, paid_days=20,
+            override=False,
+            rows=rows,
+            totals={k: round(sum(r[k] for r in rows), 2) for k in
+                    ("base_earned", "ot_payable", "allowance", "incentive",
+                     "gross", "ptax", "net")},
+            flag_count=sum(len(r["flags"]) for r in rows),
+        )
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify(error=f"{type(e).__name__}: {e}"), 400
+
+
 
 @app.post("/api/ot-rows")
 def ot_rows():
@@ -402,7 +466,7 @@ def ot_rows():
         year, month = (int(x) for x in body["month"].split("-"))
         rules = Rules()
         sheets = read_workbook(path, rules, year, month)
-        master = _json(CONFIG / "employees.json")
+        master = _json("employees")
         out = []
         for tab, data in sheets.items():
             emp = match_employee(tab, data["name"], master)
@@ -440,7 +504,9 @@ def payslip_html():
         if not results:
             return jsonify(error="No matching employee."), 404
         body_html = "".join(render_payslip(r, year, month) for r in results)
-        return (f"<!doctype html><meta charset='utf-8'><style>{CSS}"
+        branding = get_branding()
+        css = generate_css(branding)
+        return (f"<!doctype html><meta charset='utf-8'><style>{css}"
                 f"@page{{size:A4;margin:10mm}} body{{padding:14px}}</style>{body_html}")
     except Exception as e:
         return jsonify(error=str(e)), 400
@@ -466,9 +532,11 @@ def payslip_download():
 
         # Generate combined HTML
         body_html = "".join(render_payslip(r, year, month) for r in results)
+        branding = get_branding()
+        css = generate_css(branding)
         full_html = (f"<!doctype html><html><head><meta charset='utf-8'>"
-                     f"<title>Genartml Payslip {MONTHS[month]} {year}</title>"
-                     f"<style>{CSS}\n@page {{ size:A4; margin:10mm; }}</style></head>"
+                     f"<title>Payslip {MONTHS[month]} {year}</title>"
+                     f"<style>{css}\n@page {{ size:A4; margin:10mm; }}</style></head>"
                      f"<body>{body_html}</body></html>")
 
         if who and who != "ALL":
@@ -719,6 +787,110 @@ def payroll_unarchive(month_key):
     return jsonify(ok=True)
 
 
+@app.post("/api/chat")
+def hr_chat():
+    body = request.get_json(force=True)
+    user_msg = body.get("message")
+    session_id = body.get("session_id", "default")
+    api_key = os.environ.get("GEMINI_API_KEY")
+    
+    if not api_key:
+        return jsonify(error="GEMINI_API_KEY environment variable is not set on the server."), 400
+        
+    try:
+        import google.generativeai as genai
+        genai.configure(api_key=api_key)
+        
+        # Load Context
+        employees = _json("employees")
+        rules = _json("rules")
+        holidays = _json("holidays")
+        compliance = _json("compliance")
+        
+        # Load History
+        chat_data = _json("chat_history")
+        if not isinstance(chat_data, dict):
+            chat_data = {"sessions": {session_id: {"title": "New Chat", "messages": []}}}
+        
+        if "sessions" not in chat_data:
+            chat_data["sessions"] = {}
+        if session_id not in chat_data["sessions"]:
+            chat_data["sessions"][session_id] = {"title": user_msg[:30] + "...", "messages": []}
+            
+        session = chat_data["sessions"][session_id]
+        history = session["messages"]
+            
+        sys_prompt = f"""You are the Genartml Payroll HR Assistant, a proprietary, highly intelligent tool built by Genartml Pvt. Ltd.
+You help the HR admin by answering questions about payroll, employee leave balances, statutory compliance, and company policies.
+Use the following live company data to answer questions accurately.
+
+COMPANY RULES:
+{json.dumps(rules)}
+
+EMPLOYEES DATABASE:
+{json.dumps(employees)}
+
+HOLIDAYS:
+{json.dumps(holidays)}
+
+STATUTORY COMPLIANCE SETTINGS (EPF, ESI, TDS):
+{json.dumps(compliance)}
+
+COMMUNICATION GUIDELINES:
+1. Be extremely concise, smart, and highly organized in your replies.
+2. Structure your answers properly using clear Markdown headers (`###`), bulleted lists (`*`), and bold text (`**`) for emphasis. 
+3. When listing data (like employee leaves, salaries, or tax settings), ALWAYS use Markdown tables for perfect readability.
+4. If a calculation is requested, show your work step-by-step in a clear block.
+5. You do NOT have the ability to modify the database; you can only read it and advise the user on how they can change it in the dashboard.
+6. NEVER refer to yourself as an AI, a large language model, or an AI assistant. NEVER mention Google, Gemini, or any underlying technology. You are exclusively the "Genartml HR Assistant".
+"""
+        model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=sys_prompt)
+        
+        # Convert our history to Gemini format
+        gemini_history = []
+        for msg in history:
+            role = "model" if msg["role"] == "assistant" else "user"
+            gemini_history.append({"role": role, "parts": [msg["content"]]})
+            
+        chat = model.start_chat(history=gemini_history)
+        response = chat.send_message(user_msg)
+        
+        # Save History
+        history.append({"role": "user", "content": user_msg})
+        history.append({"role": "assistant", "content": response.text})
+        
+        # Update title if it's new
+        if len(history) == 2 and session["title"] == "New Chat":
+            session["title"] = user_msg[:30] + "..."
+            
+        _save_json("chat_history", chat_data)
+        
+        return jsonify(reply=response.text, history=history, session_id=session_id)
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return jsonify(error=str(e)), 400
+
+@app.get("/api/chat/history")
+def chat_history():
+    chat_data = _json("chat_history")
+    if not isinstance(chat_data, dict):
+        chat_data = {"sessions": {"default": {"title": "New Chat", "messages": []}}}
+    return jsonify(chat_data=chat_data)
+
+@app.post("/api/chat/clear")
+def clear_chat():
+    body = request.get_json(force=True)
+    session_id = body.get("session_id")
+    chat_data = _json("chat_history")
+    
+    if isinstance(chat_data, dict) and "sessions" in chat_data and session_id in chat_data["sessions"]:
+        del chat_data["sessions"][session_id]
+        _save_json("chat_history", chat_data)
+        
+    return jsonify(ok=True)
+
 @app.get("/api/selftest")
 def selftest():
     import subprocess
@@ -729,6 +901,6 @@ def selftest():
 
 if __name__ == "__main__":
     app.logger.info("Starting local development server")
-    print("\n  Genartml Payroll  →  http://127.0.0.1:5000")
+    print("\n  Genartml Payroll  →  http://127.0.0.1:5001")
     print("  WARNING: You are running the dev server. Use start.sh or start.bat for production.\n")
-    app.run(port=5000, debug=False)
+    app.run(port=5001, debug=False)

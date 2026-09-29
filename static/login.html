@@ -2,156 +2,336 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Login - Genartml Payroll</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in - Genartml Payroll</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    
-    :root {
-      --bg: #09090b;
-      --card: rgba(24, 24, 27, 0.7);
-      --border: rgba(255, 255, 255, 0.1);
-      --ink: #fafafa;
-      --ink-2: #a1a1aa;
-      --primary: #fff;
-      --primary-ink: #000;
-    }
-    
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg);
-      background-image: 
-        radial-gradient(circle at 15% 50%, rgba(255,255,255,0.04), transparent 25%),
-        radial-gradient(circle at 85% 30%, rgba(255,255,255,0.04), transparent 25%);
-      color: var(--ink);
+      font-family: 'Poppins', system-ui, sans-serif;
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===== Left panel — dark brand showcase ===== */
+    .brand-panel {
+      background: #0a0a0a;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated grid background */
+    .brand-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridShift 20s linear infinite;
+    }
+
+    @keyframes gridShift {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(60px, 60px); }
+    }
+
+    /* Glowing orbs */
+    .brand-panel::after {
+      content: '';
+      position: absolute;
+      width: 500px;
+      height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,.06) 0%, transparent 70%);
+      top: -100px;
+      right: -150px;
+      animation: orbFloat 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes orbFloat {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-40px, 60px) scale(1.15); }
+    }
+
+    .brand-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 400px;
+    }
+
+    .brand-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 32px;
+      animation: iconPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes iconPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.04); opacity: .9; }
+    }
+
+    .brand-title {
+      font-size: 38px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+      line-height: 1.1;
+    }
+
+    .brand-tagline {
+      font-size: 15px;
+      font-weight: 300;
+      color: rgba(255,255,255,.5);
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    /* Floating feature cards */
+    .features {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .feature {
       display: flex;
       align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      line-height: 1.5;
+      gap: 14px;
+      padding: 14px 18px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 12px;
+      font-size: 13px;
+      color: rgba(255,255,255,.7);
+      backdrop-filter: blur(8px);
+      transition: all .3s ease;
     }
-    
-    .container {
+
+    .feature:hover {
+      background: rgba(255,255,255,.07);
+      border-color: rgba(255,255,255,.12);
+      transform: translateX(4px);
+    }
+
+    .feature-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #fff;
+      flex-shrink: 0;
+      opacity: .5;
+    }
+
+    /* ===== Right panel — login form ===== */
+    .form-panel {
+      background: #f8f9fa;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 48px;
+    }
+
+    .form-wrapper {
       width: 100%;
       max-width: 380px;
-      padding: 32px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     }
-    
-    .logo {
-      text-align: center;
-      margin-bottom: 32px;
+
+    .form-logo {
+      height: 32px;
+      margin-bottom: 36px;
     }
-    
-    .logo h1 {
-      font-size: 24px;
+
+    .form-heading {
+      font-size: 26px;
       font-weight: 700;
-      letter-spacing: -0.5px;
+      color: #0a0a0a;
+      letter-spacing: -.5px;
+      margin-bottom: 6px;
     }
-    
-    .fld {
-      margin-bottom: 20px;
+
+    .form-sub {
+      font-size: 14px;
+      color: #868e96;
+      margin-bottom: 36px;
     }
-    
-    .fld label {
+
+    .field {
+      margin-bottom: 22px;
+    }
+
+    .field label {
       display: block;
       font-size: 13px;
       font-weight: 500;
-      color: var(--ink-2);
+      color: #495057;
       margin-bottom: 8px;
     }
-    
-    .fld input {
+
+    .field input {
       width: 100%;
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid var(--border);
-      color: var(--ink);
-      padding: 12px 14px;
-      border-radius: 8px;
+      background: #fff;
+      border: 1px solid #dee2e6;
+      color: #0a0a0a;
+      padding: 12px 16px;
+      border-radius: 10px;
       font-family: inherit;
       font-size: 14px;
-      transition: border-color 0.2s;
+      transition: all .2s ease;
     }
-    
-    .fld input:focus {
+
+    .field input:focus {
       outline: none;
-      border-color: rgba(255, 255, 255, 0.3);
+      border-color: #0a0a0a;
+      box-shadow: 0 0 0 4px rgba(10,10,10,.06);
     }
-    
-    .btn {
+
+    .field input::placeholder {
+      color: #adb5bd;
+    }
+
+    .submit-btn {
       width: 100%;
-      background: var(--primary);
-      color: var(--primary-ink);
+      background: #0a0a0a;
+      color: #fff;
       border: none;
-      padding: 12px;
-      border-radius: 8px;
+      padding: 13px;
+      border-radius: 10px;
       font-weight: 600;
       font-size: 14px;
       cursor: pointer;
       font-family: inherit;
-      transition: transform 0.1s, opacity 0.2s;
-      margin-top: 8px;
+      transition: all .2s ease;
+      margin-top: 4px;
+      position: relative;
+      overflow: hidden;
     }
-    
-    .btn:hover {
-      opacity: 0.9;
+
+    .submit-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,.1), transparent);
+      opacity: 0;
+      transition: opacity .2s;
     }
-    
-    .btn:active {
-      transform: scale(0.98);
-    }
-    
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    
+
+    .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,.18); }
+    .submit-btn:hover::after { opacity: 1; }
+    .submit-btn:active { transform: translateY(0); box-shadow: 0 2px 6px rgba(0,0,0,.12); }
+    .submit-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+
     #err {
-      color: #ef4444;
+      color: #e03131;
       font-size: 13px;
       text-align: center;
       margin-top: 16px;
       min-height: 20px;
+      font-weight: 500;
+    }
+
+    .form-footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 11px;
+      color: #adb5bd;
+      line-height: 1.7;
+    }
+
+    /* ===== Spinner ===== */
+    .spin {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: sp .5s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+    @keyframes sp { to { transform: rotate(360deg); } }
+
+    /* ===== Mobile ===== */
+    @media (max-width: 900px) {
+      body { grid-template-columns: 1fr; }
+      .brand-panel { display: none; }
+      .form-panel { padding: 40px 24px; }
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <img src="/static/assets/logo.png" alt="Logo" style="width:48px;height:48px;object-fit:contain;margin-bottom:16px;border-radius:8px;">
-  
-  <form id="frm">
-    <div class="fld">
-      <label>Username</label>
-      <input type="text" id="u" placeholder="Enter your username" required autofocus>
+<!-- Left: Brand Showcase -->
+<div class="brand-panel">
+  <div class="brand-content">
+    <img src="/static/assets/logo-icon-dark.png" alt="Genartml" class="brand-icon">
+    <div class="brand-title">Genartml Payroll</div>
+    <div class="brand-tagline">Enterprise-grade payroll processing with AI-powered automation for modern teams.</div>
+    <div class="features">
+      <div class="feature"><span class="feature-dot"></span>Automated CTC splits and overtime calculations</div>
+      <div class="feature"><span class="feature-dot"></span>AI-powered PDF report analysis</div>
+      <div class="feature"><span class="feature-dot"></span>Real-time HR policy assistant</div>
+      <div class="feature"><span class="feature-dot"></span>One-click professional payslip generation</div>
     </div>
-    <div class="fld">
-      <label>Password</label>
-      <input type="password" id="p" placeholder="••••••••" required>
+  </div>
+</div>
+
+<!-- Right: Login Form -->
+<div class="form-panel">
+  <div class="form-wrapper">
+    <img src="/static/assets/logo.png" alt="Genartml" class="form-logo">
+
+    <div class="form-heading">Welcome back</div>
+    <div class="form-sub">Sign in to your payroll dashboard</div>
+
+    <form id="frm">
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="u" placeholder="Enter your username" required autofocus>
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="p" placeholder="Enter your password" required>
+      </div>
+      <button type="submit" class="submit-btn" id="sb">Sign in</button>
+    </form>
+
+    <div id="err"></div>
+
+    <div class="form-footer">
+      Powered by Genartml Pvt. Ltd.<br>
+      Secure, encrypted, enterprise-ready.
     </div>
-    <button type="submit" class="btn" id="sb">Sign In</button>
-  </form>
-  
-  <div id="err"></div>
+  </div>
 </div>
 
 <script>
   const frm = document.getElementById('frm');
   const err = document.getElementById('err');
   const sb = document.getElementById('sb');
-  
+
   frm.onsubmit = async (e) => {
     e.preventDefault();
     err.textContent = '';
     sb.disabled = true;
-    sb.textContent = 'Signing in...';
-    
+    sb.innerHTML = '<span class="spin"></span>Signing in...';
+
     try {
       const res = await fetch('/api/login', {
         method: 'POST',
@@ -161,19 +341,20 @@
           p: document.getElementById('p').value
         })
       });
-      
+
       const data = await res.json();
       if (res.ok && data.ok) {
+        sb.innerHTML = 'Redirecting...';
         window.location.href = '/';
       } else {
         err.textContent = data.error || 'Invalid credentials';
         sb.disabled = false;
-        sb.textContent = 'Sign In';
+        sb.textContent = 'Sign in';
       }
     } catch (error) {
-      err.textContent = 'Connection failed';
+      err.textContent = 'Connection failed. Please try again.';
       sb.disabled = false;
-      sb.textContent = 'Sign In';
+      sb.textContent = 'Sign in';
     }
   };
 </script>

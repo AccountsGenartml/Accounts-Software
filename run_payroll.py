@@ -56,7 +56,7 @@ def main():
     rules = Rules()
     cal = CompanyCalendar()
     bd = cal.breakdown(year, month)
-    wd = bd["working_days"]
+    pd = bd["paid_days"]
 
     print(f"\n  GENARTML PAYROLL — {MONTHS[month]} {year}")
     print("  " + "-" * 60)
@@ -67,7 +67,7 @@ def main():
              if bd['public_holiday_dates'] else ""))
     for h in bd["public_holidays_on_weekend"]:
         print(f"      note: {h['name']} ({h['date']}) falls on a weekend — no comp day, not subtracted")
-    print(f"  WORKING DAYS     = {wd}   (same divisor for every employee)\n")
+    print(f"  PAID DAYS        = {pd}   (same divisor for every employee)\n")
 
     sheets = read_workbook(a.timesheet, rules, year, month)
     master = load_employees()
@@ -92,7 +92,7 @@ def main():
                  + "\n  Add them to config/employees.json. Refusing to guess a CTC.")
 
     try:
-        results = run_payroll(pairs, wd, rules, cal, year, month)
+        results = run_payroll(pairs, pd, rules, cal, year, month)
     except PayrollError as e:
         sys.exit(f"  HALTED: {e}")
 

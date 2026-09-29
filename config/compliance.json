@@ -1,0 +1,8 @@
+{
+  "epf_enabled": false,
+  "epf_rate": 0.12,
+  "esi_enabled": false,
+  "esi_rate": 0.0075,
+  "esi_threshold": 21000,
+  "tds_enabled": false
+}
