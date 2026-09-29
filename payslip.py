@@ -244,8 +244,7 @@ def render_payslip(res, year, month):
             ("Variable Incentive", res["incentive_paid"]),
             ("Performance Bonus", res.get("performance_bonus", Decimal(0))),
             ("Fixed Allowance", res["allowance_paid"]),
-            ("Overtime Allowance", res["ot_payable"]),
-            ("Reimbursements", res.get("reimbursements", Decimal(0)))]
+            ("Overtime Allowance", res["ot_payable"])]
 
     # ── Deductions ──
     ded = [("Provident Fund (EPF)", res.get("epf") or None),
@@ -343,8 +342,10 @@ def render_payslip(res, year, month):
   <div class="cols">
     <div><table class="sec">
       <tr><th>Reimbursements (Non-Taxable)</th><th class="n"></th></tr>
-      <tr><td>Internet / Telephone</td><td class="n muted">N/A</td></tr>
-      <tr><td>Fuel / Travel</td><td class="n muted">N/A</td></tr>
+      {
+          f"<tr><td>Custom Reimbursements</td><td class='n'>{_r(res['reimbursements'])}</td></tr>" if res['reimbursements'] else
+          '<tr><td>Internet / Telephone</td><td class="n muted">N/A</td></tr><tr><td>Fuel / Travel</td><td class="n muted">N/A</td></tr>'
+      }
       <tr class="tot"><td><b>Total Reimbursements (C)</b></td>
         <td class="n">{reimb_cell}</td></tr>
     </table></div>
