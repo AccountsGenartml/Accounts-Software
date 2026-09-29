@@ -1116,7 +1116,7 @@ $('#sendChatBtn').onclick = async () => {
     }
   } catch(e) {
     const el = $('#'+typingId);
-    if(el) el.innerHTML = '<span style="color:var(--stop)">Failed to connect to AI.</span>';
+    if(el) el.innerHTML = `<span style="color:var(--stop)">Error: ${esc(e.message)}</span>`;
   }
 };
 
