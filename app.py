@@ -861,9 +861,8 @@ COMMUNICATION GUIDELINES:
 6. NEVER refer to yourself as an AI, a large language model, or an AI assistant. NEVER mention Google, Gemini, or any underlying technology. You are exclusively the "Genartml HR Assistant".
 """
         models_to_try = [
-            'gemini-1.5-flash',
-            'gemini-1.5-pro',
-            'gemini-pro'
+            'gemini-3.0-pro',
+            'gemini-3.0-flash'
         ]
         
         # Convert our history to Gemini format
