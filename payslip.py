@@ -11,6 +11,7 @@ from pathlib import Path
 ASSETS = Path(__file__).parent / "assets"
 
 import json
+from decimal import Decimal
 
 def get_branding():
     try:
