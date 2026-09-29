@@ -47,7 +47,14 @@ def extract_payroll_from_pdf(pdf_bytes, api_key):
     # 2. Call Gemini API
     models_to_try = [
         'gemini-3.0-pro',
-        'gemini-3.0-flash'
+        'gemini-3.0-flash',
+        'gemini-2.5-pro',
+        'gemini-2.5-flash',
+        'gemini-1.5-pro',
+        'gemini-1.5-flash',
+        'gemini-1.0-pro',
+        'gemini-pro',
+        'gemini-1.0-pro-latest'
     ]
     
     response = None
