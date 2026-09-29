@@ -45,17 +45,11 @@ def extract_payroll_from_pdf(pdf_bytes, api_key):
     }
     
     # 2. Call Gemini API
-    models_to_try = [
-        'gemini-3.0-pro',
-        'gemini-3.0-flash',
-        'gemini-2.5-pro',
-        'gemini-2.5-flash',
-        'gemini-1.5-pro',
-        'gemini-1.5-flash',
-        'gemini-1.0-pro',
-        'gemini-pro',
-        'gemini-1.0-pro-latest'
-    ]
+    available = [m.name.replace("models/", "") for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+    models_to_try = sorted([m for m in available if 'gemini' in m], reverse=True)
+    
+    if not models_to_try:
+         raise Exception("Your Google API Key does not have access to any Gemini models. Check Google Cloud permissions.")
     
     response = None
     last_error = None

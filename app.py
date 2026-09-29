@@ -860,17 +860,12 @@ COMMUNICATION GUIDELINES:
 5. You do NOT have the ability to modify the database; you can only read it and advise the user on how they can change it in the dashboard.
 6. NEVER refer to yourself as an AI, a large language model, or an AI assistant. NEVER mention Google, Gemini, or any underlying technology. You are exclusively the "Genartml HR Assistant".
 """
-        models_to_try = [
-            'gemini-3.0-pro',
-            'gemini-3.0-flash',
-            'gemini-2.5-pro',
-            'gemini-2.5-flash',
-            'gemini-1.5-pro',
-            'gemini-1.5-flash',
-            'gemini-1.0-pro',
-            'gemini-pro',
-            'gemini-1.0-pro-latest'
-        ]
+        # Dynamically fetch available models to guarantee zero 404 errors!
+        available = [m.name.replace("models/", "") for m in genai.list_models() if 'generateContent' in m.supported_generation_methods]
+        models_to_try = sorted([m for m in available if 'gemini' in m], reverse=True)
+        
+        if not models_to_try:
+             raise Exception("Your Google API Key does not have access to any Gemini models. Check Google Cloud permissions.")
         
         # Convert our history to Gemini format
         gemini_history = []
