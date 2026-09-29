@@ -860,7 +860,7 @@ COMMUNICATION GUIDELINES:
 5. You do NOT have the ability to modify the database; you can only read it and advise the user on how they can change it in the dashboard.
 6. NEVER refer to yourself as an AI, a large language model, or an AI assistant. NEVER mention Google, Gemini, or any underlying technology. You are exclusively the "Genartml HR Assistant".
 """
-        model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=sys_prompt)
+        model = genai.GenerativeModel('gemini-1.5-pro', system_instruction=sys_prompt)
         
         # Convert our history to Gemini format
         gemini_history = []

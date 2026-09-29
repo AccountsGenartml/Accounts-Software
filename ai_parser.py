@@ -45,7 +45,7 @@ def extract_payroll_from_pdf(pdf_bytes, api_key):
     }
     
     # 2. Call Gemini API
-    model = genai.GenerativeModel('gemini-1.5-flash', system_instruction=SYS_PROMPT)
+    model = genai.GenerativeModel('gemini-1.5-pro', system_instruction=SYS_PROMPT)
     
     response = model.generate_content(
         [doc_part],
