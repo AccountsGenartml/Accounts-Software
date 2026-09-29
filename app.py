@@ -128,7 +128,7 @@ def handle_exception(e):
 
 
 from db import get_json as _json, save_json as _save_json
-from storage_bridge import upload_file_to_bucket, download_file_from_bucket
+from storage_bridge import upload_file_to_bucket, download_file_from_bucket, list_files_in_bucket, delete_file_from_bucket
 
 
 def _dec(o):
@@ -241,11 +241,28 @@ def calendar_year(year):
 
 @app.get("/api/timesheets")
 def list_timesheets():
+    # Fetch from Supabase
+    files = list_files_in_bucket("timesheets")
+    if files:
+        # Sort and format to match existing UI
+        parsed = []
+        for f in files:
+            if not f.get("name") or f.get("name") == ".emptyFolderPlaceholder":
+                continue
+            # Supabase returns created_at like 2026-09-24T06:05:07.123Z
+            try:
+                dt_obj = dt.datetime.strptime(f["created_at"].split(".")[0], "%Y-%m-%dT%H:%M:%S")
+                mod = dt_obj.strftime("%d %b %Y, %H:%M")
+            except:
+                mod = "Unknown"
+            parsed.append({"name": f["name"], "size": f.get("metadata", {}).get("size", 0), "modified": mod})
+        return jsonify(sorted(parsed, key=lambda x: x["name"], reverse=True))
+    
+    # Fallback to local
     return jsonify(sorted(
         [{"name": p.name, "size": p.stat().st_size,
           "modified": dt.datetime.fromtimestamp(p.stat().st_mtime).strftime("%d %b %Y, %H:%M")}
          for p in UPLOADS.glob("*.xlsx")], key=lambda x: x["name"], reverse=True))
-
 
 @app.post("/api/timesheets")
 def upload_timesheet():
@@ -254,8 +271,8 @@ def upload_timesheet():
         return jsonify(error="Upload an .xlsx timesheet workbook."), 400
     dest = UPLOADS / Path(f.filename).name
     f.save(dest)
+    upload_file_to_bucket("timesheets", dest, Path(f.filename).name)
     return jsonify(ok=True, name=dest.name)
-
 
 @app.post("/api/timesheets/delete")
 def delete_timesheet():
@@ -263,6 +280,7 @@ def delete_timesheet():
     p = UPLOADS / Path(name).name
     if p.exists():
         p.unlink()
+    delete_file_from_bucket("timesheets", Path(name).name)
     return jsonify(ok=True)
 
 
@@ -273,6 +291,9 @@ def preview():
     """Read a workbook and report which tabs match which employee. No maths."""
     body = request.get_json(force=True)
     path = UPLOADS / Path(body["timesheet"]).name
+    if not path.exists():
+        download_file_from_bucket("timesheets", path.name, path)
+        
     year, month = (int(x) for x in body["month"].split("-"))
     try:
         rules = Rules()
@@ -299,6 +320,9 @@ def preview():
 
 def _prepare(body):
     path = UPLOADS / Path(body["timesheet"]).name
+    if not path.exists():
+        download_file_from_bucket("timesheets", path.name, path)
+        
     year, month = (int(x) for x in body["month"].split("-"))
     rules, cal = Rules(), CompanyCalendar()
     bd = cal.breakdown(year, month)

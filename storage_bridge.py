@@ -28,3 +28,25 @@ def download_file_from_bucket(bucket_name, object_name, dest_path):
             f.write(res.content)
         return True
     return False
+
+def list_files_in_bucket(bucket_name):
+    url, key = get_supabase_credentials()
+    if not url: return []
+    
+    res = requests.post(
+        f"{url}/storage/v1/object/list/{bucket_name}",
+        headers=get_headers(key),
+        json={"prefix": "", "limit": 100, "offset": 0, "sortBy": {"column": "created_at", "order": "desc"}}
+    )
+    if res.status_code == 200:
+        return res.json()
+    return []
+
+def delete_file_from_bucket(bucket_name, object_name):
+    url, key = get_supabase_credentials()
+    if not url: return
+    
+    requests.delete(
+        f"{url}/storage/v1/object/{bucket_name}/{object_name}",
+        headers=get_headers(key)
+    )
