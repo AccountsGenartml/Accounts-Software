@@ -312,6 +312,7 @@ td.num{font-variant-numeric:tabular-nums}
         <label class="f">Month
           <input type="month" id="mo" value="2026-08"></label>
         <button class="btn" id="go">Run payroll</button>
+        <button class="btn secondary" id="btnOverrides">Custom Additions</button>
         <button class="btn ghost" id="otBtn">Review overtime</button>
       </div>
 
@@ -657,6 +658,58 @@ $('#up').onchange=async e=>{const f=e.target.files[0];if(!f)return;
   try{await api('/api/timesheets',{method:'POST',body:fd});
     toast('Added '+f.name,'good');loadFiles();loadTs();}catch(err){toast(err.message,'bad');}
   e.target.value='';};
+
+/* ---------------- custom month additions ---------------- */
+$('#btnOverrides').onclick=async()=>{
+  const m=$('#mo').value;
+  if(!m)return toast('Select a month','bad');
+  try{
+    $('#btnOverrides').classList.add('spin');
+    let emps = await api('/api/config/employees');
+    let vars = await api('/api/config/variables_'+m).catch(()=>({}));
+    
+    let h = `<div style="margin-bottom:16px;font-size:13px;color:var(--ink-3)">Add one-off performance bonuses, reimbursements, or deductions specifically for <b>${m}</b>. This will not affect other months.</div>`;
+    h += `<div class="grid2">`;
+    for(const e of emps){
+      if(!e.emp_id) continue;
+      const v = vars[e.emp_id] || {};
+      h += `<div class="card" style="margin-bottom:0">
+        <h4 style="margin:0 0 12px 0">${esc(e.name)} <span style="font-weight:400;color:var(--ink-3);font-size:12px">(${esc(e.emp_id)})</span></h4>
+        <div class="fld"><label>Performance Bonus (₹)</label>
+          <input type="number" id="v_pb_${e.emp_id}" value="${v.performance_bonus||''}"></div>
+        <div class="fld" style="margin-top:8px"><label>Reimbursements (₹)</label>
+          <input type="number" id="v_rm_${e.emp_id}" value="${v.reimbursements||''}"></div>
+        <div class="fld" style="margin-top:8px"><label>Other Deductions (₹)</label>
+          <input type="number" id="v_od_${e.emp_id}" value="${v.other_deductions||''}"></div>
+      </div>`;
+    }
+    h += `</div>`;
+    
+    modal(`Custom Additions for ${m}`, h, `<button class="btn" id="mSaveVars">Save Overrides</button>`);
+    $('#mSaveVars').onclick = async () => {
+      const payload = {};
+      for(const e of emps){
+        if(!e.emp_id) continue;
+        const pb = Number($(`#v_pb_${e.emp_id}`).value)||0;
+        const rm = Number($(`#v_rm_${e.emp_id}`).value)||0;
+        const od = Number($(`#v_od_${e.emp_id}`).value)||0;
+        if(pb || rm || od) {
+          payload[e.emp_id] = {};
+          if(pb) payload[e.emp_id].performance_bonus = pb;
+          if(rm) payload[e.emp_id].reimbursements = rm;
+          if(od) payload[e.emp_id].other_deductions = od;
+        }
+      }
+      $('#mSaveVars').textContent = 'Saving...';
+      try {
+        await api('/api/config/variables_'+m, {method:'POST', body:JSON.stringify(payload)});
+        toast('Month overrides saved!','good');
+        $('#veil').classList.remove('on');
+      } catch(ex){ toast(ex.message,'bad'); $('#mSaveVars').textContent = 'Save Overrides'; }
+    };
+  }catch(e){toast(e.message,'bad')}
+  finally{$('#btnOverrides').classList.remove('spin');}
+};
 
 /* ---------------- overtime review ---------------- */
 $('#otBtn').onclick=async()=>{

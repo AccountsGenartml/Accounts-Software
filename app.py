@@ -330,6 +330,8 @@ def _prepare(body):
     sheets = read_workbook(path, rules, year, month)
     master = _json("employees")
 
+    month_key = f"{year}-{month:02d}"
+    month_vars = _json(f"variables_{month_key}")
     excluded = set(body.get("exclude_ot_dates") or [])
     pairs, missing = [], []
     for tab, data in sheets.items():
@@ -338,6 +340,13 @@ def _prepare(body):
             missing.append(f"{data['name']} ({tab})")
             continue
         emp = dict(emp)
+        
+        # Overlay month-specific variables
+        emp_vars = month_vars.get(emp.get("emp_id"), {}) if isinstance(month_vars, dict) else {}
+        for k in ("performance_bonus", "reimbursements", "other_deductions", "lop_days_override"):
+            if k in emp_vars and emp_vars[k] not in ("", None):
+                emp[k] = float(emp_vars[k])
+                
         emp["ctc_monthly"] = Decimal(str(emp["ctc_monthly"]))
         for k in ("date_of_joining", "exit_date"):
             if emp.get(k):
