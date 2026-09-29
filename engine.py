@@ -241,7 +241,10 @@ def compute_employee(emp, rows, paid_days, rules, cal, year, month):
     is_static = rules.cfg.get("flags", {}).get("static_base_pay", True)
     base_earned = base_salary if is_static else base_salary * (frac if ep["prorate_allowance"] else _d(1))
     ot_payable = ot_rate * ot_hours
-    gross = base_earned + ot_payable + allowance_paid + incentive_paid
+    
+    perf_bonus = _d(emp.get("performance_bonus") or 0)
+    
+    gross = base_earned + ot_payable + allowance_paid + incentive_paid + perf_bonus
     ptax = rules.professional_tax(gross)
     reimb = _d(emp.get("reimbursements") or 0)
     other_ded = _d(emp.get("other_deductions") or 0)
@@ -294,6 +297,7 @@ def compute_employee(emp, rows, paid_days, rules, cal, year, month):
         "incentive_full": money(incentive_full),
         "allowance_paid": money(allowance_paid),
         "incentive_paid": money(incentive_paid),
+        "performance_bonus": money(perf_bonus),
         "lop_deduction": money(lop_deduction),
         "partial_day_deduction": money(partial_deduction),
         "gross": money(gross),

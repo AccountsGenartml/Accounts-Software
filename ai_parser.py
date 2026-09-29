@@ -23,6 +23,9 @@ Each object must represent one employee and have the following exact schema:
   "lop_deduction": 4000.00, # Money deducted for LWP or Leave Without Pay, 0 if none
   "lop_days": 4, # Number of days deducted for LWP, 0 if none or not stated
   "partial_day_deduction": 1000.00, # Money deducted for Half Days, late marks, or shortfalls
+  "performance_bonus": 5000.00, # Per-person custom performance bonus, 0 if none
+  "reimbursements": 1500.00, # Custom reimbursements/allowances, 0 if none
+  "other_deductions": 200.00, # Any other custom deductions, 0 if none
   "professional_tax": 200.00, # 0 if none
   "gross": 27450.00,
   "net_pay": 21750.00
@@ -121,7 +124,11 @@ def convert_to_standard_results(ai_data, year, month, master_employees):
         lop_deduction = money(emp_data.get("lop_deduction", 0))
         partial_deduction = money(emp_data.get("partial_day_deduction", 0))
         
-        total_deductions = ptax + lop_deduction + partial_deduction
+        perf_bonus = money(emp_data.get("performance_bonus", 0))
+        reimb = money(emp_data.get("reimbursements", 0))
+        other_ded = money(emp_data.get("other_deductions", 0))
+        
+        total_deductions = ptax + lop_deduction + partial_deduction + other_ded
         net = money(emp_data.get("net_pay", 0))
         
         # Construct the standard result payload
@@ -148,11 +155,12 @@ def convert_to_standard_results(ai_data, year, month, master_employees):
             "incentive_paid": incentive,
             "lop_deduction": lop_deduction,
             "partial_day_deduction": partial_deduction,
+            "performance_bonus": perf_bonus,
             "gross": gross,
             "professional_tax": ptax,
-            "other_deductions": money(0),
+            "other_deductions": other_ded,
             "total_deductions": total_deductions,
-            "reimbursements": money(0),
+            "reimbursements": reimb,
             "net_pay": net,
             "flags": [{"code": "AI_GENERATED", "detail": "This payslip was generated directly from an AI PDF scan. Please verify the amounts."}]
         }

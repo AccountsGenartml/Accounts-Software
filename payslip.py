@@ -241,11 +241,11 @@ def render_payslip(res, year, month):
     # ── Earnings ──
     earn = [("Basic Salary", res["base_earned"]),
             ("House Rent Allowance", None),
-            ("Performance Bonus", res["incentive_paid"]),
+            ("Variable Incentive", res["incentive_paid"]),
+            ("Performance Bonus", res.get("performance_bonus", Decimal(0))),
             ("Fixed Allowance", res["allowance_paid"]),
-            ("Conveyance Allowance", None),
-            ("Medical Allowance", None),
-            ("Overtime Allowance", res["ot_payable"])]
+            ("Overtime Allowance", res["ot_payable"]),
+            ("Reimbursements", res.get("reimbursements", Decimal(0)))]
 
     # ── Deductions ──
     ded = [("Provident Fund (EPF)", res.get("epf") or None),

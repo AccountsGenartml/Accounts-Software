@@ -824,8 +824,10 @@ async function downloadSlip(empId){
 
 /* ---------------- employees ---------------- */
 const EF=[['name','Full name'],['emp_id','Employee ID'],['ctc_monthly','Monthly CTC (₹)'],
+  ['tds_monthly','Monthly TDS (₹)'],['performance_bonus','Performance Bonus (₹)'],
+  ['reimbursements','Reimbursements (₹)'],['other_deductions','Other Deductions (₹)'],
   ['designation','Designation'],['department','Department'],['date_of_joining','Joined (YYYY-MM-DD)'],
-  ['exit_date','Last day (YYYY-MM-DD)'],['pan','PAN'],['uan','UAN'],['tds_monthly','Monthly TDS (₹)'],
+  ['exit_date','Last day (YYYY-MM-DD)'],['pan','PAN'],['uan','UAN'],
   ['bank_name','Bank'],['bank_ac','Account number'],['ifsc','IFSC']];
 
 async function loadEmps(){EMPS=await api('/api/config/employees');drawEmps();}
@@ -847,7 +849,7 @@ function drawEmps(){
     if(inp.dataset.lv){e.leave_opening=e.leave_opening||{};e.leave_opening[inp.dataset.lv]=Number(inp.value)||0;return;}
     const k=inp.dataset.k;
     if(k==='aliases')e.aliases=inp.value.split(',').map(s=>s.trim()).filter(Boolean);
-    else if(k==='ctc_monthly'||k==='tds_monthly')e[k]=Number(inp.value)||0;
+    else if(['ctc_monthly','tds_monthly','performance_bonus','reimbursements','other_deductions'].includes(k))e[k]=Number(inp.value)||0;
     else if(inp.value==='')delete e[k];
     else e[k]=inp.value;});
   $$('#empList [data-rm]').forEach(b=>b.onclick=async()=>{const ok=await confirmModal('Remove '+(EMPS[+b.dataset.rm].name||'this employee')+'?');if(!ok)return;EMPS.splice(+b.dataset.rm,1);drawEmps();});
