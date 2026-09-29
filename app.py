@@ -392,7 +392,16 @@ def ai_run():
     pdf_path = UPLOADS / Path(body["pdf_file"]).name
     api_key = os.environ.get("GEMINI_API_KEY")
     if not api_key:
-        return jsonify(error="GEMINI_API_KEY environment variable is not set on the server."), 400
+        secrets_path = HERE / "config" / "secrets.json"
+        if secrets_path.exists():
+            import json
+            try:
+                api_key = json.loads(secrets_path.read_text()).get("gemini_api_key")
+            except Exception:
+                pass
+                
+    if not api_key:
+        return jsonify(error="GEMINI_API_KEY environment variable is not set on the server or in config/secrets.json."), 400
         
     year, month = (int(x) for x in body["month"].split("-"))
     master = _json("employees")
@@ -795,7 +804,16 @@ def hr_chat():
     api_key = os.environ.get("GEMINI_API_KEY")
     
     if not api_key:
-        return jsonify(error="GEMINI_API_KEY environment variable is not set on the server."), 400
+        secrets_path = HERE / "config" / "secrets.json"
+        if secrets_path.exists():
+            import json
+            try:
+                api_key = json.loads(secrets_path.read_text()).get("gemini_api_key")
+            except Exception:
+                pass
+                
+    if not api_key:
+        return jsonify(error="GEMINI_API_KEY environment variable is not set on the server or in config/secrets.json."), 400
         
     try:
         import google.generativeai as genai
