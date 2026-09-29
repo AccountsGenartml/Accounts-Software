@@ -823,6 +823,11 @@ def hr_chat():
         holidays = _json("holidays")
         compliance = _json("compliance")
         
+        try:
+            payroll_history = FIN.store().list_payroll()
+        except Exception:
+            payroll_history = []
+        
         # Load History
         chat_data = _json("chat_history")
         if not isinstance(chat_data, dict):
@@ -837,7 +842,7 @@ def hr_chat():
         history = session["messages"]
             
         sys_prompt = f"""You are the Genartml Payroll HR Assistant, a proprietary, highly intelligent tool built by Genartml Pvt. Ltd.
-You help the HR admin by answering questions about payroll, employee leave balances, statutory compliance, and company policies.
+You help the HR admin by answering questions about payroll, employee leave balances, statutory compliance, company policies, and past timesheets.
 Use the following live company data to answer questions accurately.
 
 COMPANY RULES:
@@ -851,6 +856,9 @@ HOLIDAYS:
 
 STATUTORY COMPLIANCE SETTINGS (EPF, ESI, TDS):
 {json.dumps(compliance)}
+
+PROCESSED PAYROLL ARCHIVE (PAST MONTHS & TIMESHEETS):
+{json.dumps(payroll_history)}
 
 COMMUNICATION GUIDELINES:
 1. Be extremely concise, smart, and highly organized in your replies.
