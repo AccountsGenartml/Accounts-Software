@@ -925,6 +925,19 @@ def chat_history():
         chat_data = {"sessions": {"default": {"title": "New Chat", "messages": []}}}
     return jsonify(chat_data=chat_data)
 
+@app.get("/api/models")
+def list_models():
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        return jsonify(error="No API key found in environment"), 400
+    try:
+        import google.generativeai as genai
+        genai.configure(api_key=api_key)
+        models = [m.name for m in genai.list_models()]
+        return jsonify(available_models=models)
+    except Exception as e:
+        return jsonify(error=str(e)), 400
+
 @app.post("/api/chat/clear")
 def clear_chat():
     body = request.get_json(force=True)
