@@ -1,237 +1,103 @@
-# Genartml Payroll
+# Genartml Payroll & HR Suite 🚀
 
-Reads a monthly timesheet workbook, calculates salaries, and generates payslips.
-Built for Genartml Pvt. Ltd. only — the rules, calendar, and branding are yours.
+An enterprise-grade, privacy-first payroll calculation engine and HR management dashboard built exclusively for Genartml Pvt. Ltd.
 
-## Install
+This software automates monthly timesheet parsing (via AI), exact gross-to-net salary calculations (including EPF, ESI, and TDS compliance), dynamically generates branded PDF payslips, and stores financial records cleanly in a unified dashboard.
 
-Needs Python 3.9+.
+---
 
-```bash
-./setup.sh          # macOS / Linux
-setup.bat           # Windows
-```
+## ✨ Key Features
 
-That installs the dependencies and runs the 34-check self-test so you know
-straight away whether it works on your machine.
+1. **AI-Powered "Magic" Timesheet Scanner**
+   Upload raw biometric PDF logs or messy timesheets. The system uses Google Gemini AI to automatically extract, structure, and calculate total hours, overtime, and leave data without any manual data entry.
+2. **Statutory Tax Compliance Engine**
+   Legally compliant in India. The payroll engine automatically calculates and deducts EPF (12% of basic), ESI (0.75% of gross <= ₹21k), and custom TDS, straight from the UI. Toggle these on or off dynamically in the **Compliance** tab.
+3. **Intelligent HR Chat Assistant**
+   A proprietary, RAG-powered AI assistant that has secure access to your live company policies, employee leave balances, and holidays. It organizes answers beautifully and remembers your conversation history across multiple sessions.
+4. **Dynamic Branding & Theming**
+   Customize the output PDF payslips entirely from the UI. Add your CIN, EPF registration number, custom footer text, and inject a custom HEX theme color to match the company brand.
+5. **Rock-Solid Payroll Math**
+   The engine exists to prevent the infamous "working days divisor bug". It enforces a month-constant divisor based strictly on the company calendar (e.g., 20 working days in August), ensuring overtime rates and per-day rates are legally infallible.
+6. **Expense & Finance Tracking**
+   Every rupee spent is tracked by month. Upload invoices directly in the **Money** tab, categorize them, and monitor cash flow alongside the automated salary payouts.
 
-## Use the app (recommended)
+---
 
-```bash
-python3 app.py
-```
+## 🛠 Installation & Local Setup
 
-Open **http://127.0.0.1:5000**. Everything runs on your computer — no hosting,
-no account, nothing uploaded anywhere.
+The system requires **Python 3.9+**.
 
-Six screens:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/AccountsGenartml/Accounts-Software.git
+   cd Accounts-Software
+   ```
 
-| Screen | What you do there |
+2. **Install dependencies:**
+   ```bash
+   ./setup.sh          # macOS / Linux
+   setup.bat           # Windows
+   ```
+   *This script installs dependencies and automatically runs the 41-check self-test suite to guarantee engine integrity on your machine.*
+
+3. **Run the Dashboard:**
+   ```bash
+   python3 app.py
+   ```
+   Open **http://127.0.0.1:5001** in your browser. All processing happens locally; no sensitive employee data leaves your machine unless you explicitly connect a cloud database.
+
+---
+
+## ☁️ Vercel Cloud Deployment
+
+The software is built to be deployed on Vercel for remote HR access. 
+
+1. Push your code to a GitHub repository.
+2. Import the repository into Vercel.
+3. Add the following **Environment Variables** in Vercel:
+
+| Variable | Description |
 |---|---|
-| **Run payroll** | Pick a workbook and month, calculate, view and download payslips. |
-| **Money** | Every rupee spent, by month. Invoices, categories, salary totals. |
-| **Employees** | CTC, PAN, bank, joining and exit dates, opening leave balances. |
-| **Pay rules** | Salary split, OT multiplier, every day type's pay factor, tax slabs. |
-| **Holidays** | The 2026 calendar. Edit a holiday and working days recalculate. |
-| **Timesheets** | Upload and manage monthly workbooks. |
-| **Self-test** | Run the 34 checks any time you change a rule. |
+| `GEMINI_API_KEY` | **Required.** Powers the AI Timesheet Scanner and the HR Chat Assistant. |
+| `SUPABASE_URL` | **Required.** The URL to your Supabase project for persistent cloud storage. |
+| `SUPABASE_KEY` | **Required.** The `service_role` secret key for Supabase to bypass Row-Level Security. |
+| `SECRET_KEY` | **Recommended.** A long random string used by Flask to encrypt browser sessions. |
 
-**Review overtime** on the Run screen lists every approved OT entry with its
-problems marked — no clock trail, above the device log, on an unpaid day.
-Untick anything you don't want to pay and re-run. Nothing is written back to
-your timesheet.
+*(Note: Vercel automatically injects `VERCEL=1`, which triggers the app to switch from local SQLite to your Supabase cloud database automatically).*
 
-## Tracking money
+---
 
-**Money → Add invoice** stores the spend and the invoice file together. Date,
-category, vendor, amount, GST, invoice number, paid/due, and the PDF or photo.
-Everything rolls up by month automatically.
+## 🗄 Architecture & File Structure
 
-Salaries are not typed in by hand. Run payroll, then press **Record salaries in
-Money** on the results — the month's net total and per-person breakdown are saved
-as that month's salary spend. Re-recording the same month replaces it, so
-correcting a run is safe.
+No rates or branding elements are hardcoded into Python. Everything is configurable.
 
-The Overview shows what you spent this month, all time, the salary share, and a
-breakdown by category. Click any month for its full detail: every employee paid
-and every invoice filed.
-
-### Where it's stored
-
-By default: `data/genartml.db` on this computer, with invoice files in
-`data/invoices/`. Nothing to set up, works offline, but it only exists on this
-machine — back the `data/` folder up.
-
-**To use Supabase instead:**
-
-1. Supabase → SQL Editor → paste and run `config/supabase_schema.sql`. That creates
-   both tables and the private `invoices` storage bucket.
-2. Supabase → Project Settings → API Keys → copy the **secret** key
-   (`sb_secret_…`).
-3. In the app: **Money → Database**, paste the project URL and the secret key,
-   press Connect. Then press **Test connection** — it checks the project, the key
-   type, both tables, a write, and the storage bucket separately, so a failure tells
-   you exactly which step broke.
-
-### Why the secret key and not the publishable one
-
-The publishable key is designed to be public — it ships inside browsers. Payroll
-and expense data must not be readable by anyone holding it, so the schema keeps
-row-level security **on** with no anon policy. The publishable key therefore cannot
-read these tables, and the app refuses it with an explanation rather than saving a
-setup that will not work.
-
-This app is a server running on your own machine. The browser talks to your Flask
-app, never to Supabase directly, so the secret key sits in `config/secrets.json`
-(gitignored) and never reaches a browser. That is the correct place for it.
-
-## Command line (same engine, no browser)
-
-```bash
-python run_payroll.py --timesheet /path/to/Employee_Timesheet_August_2026.xlsx --month 2026-08
+```text
+genartml-payroll/
+├── app.py                # Core Flask backend & API router
+├── static/index.html     # Unified Single-Page Application (SPA) frontend
+├── engine.py             # The core mathematical payroll engine
+├── payslip.py            # PDF and HTML payslip rendering logic
+├── ai_parser.py          # Google Gemini PDF Timesheet extractor
+├── finance.py            # Expense and invoice logic
+├── db.py                 # SQLite local database driver
+├── storage_bridge.py     # Supabase cloud storage driver
+├── scripts/              # Helper scripts and legacy generation tools
+├── config/               # System state (JSON files)
+│   ├── rules.json        # CTC splits, OT multipliers, PT slabs
+│   ├── calendar_2026.json# Working days and holiday calendar
+│   ├── employees.json    # Employee master database (CTC, PAN, UAN)
+│   ├── branding.json     # Custom payslip theme & company metadata
+│   ├── compliance.json   # EPF, ESI, and TDS toggles
+│   ├── chat_history.json # Multi-session HR Chat memory
+│   └── supabase_schema.sql
+└── demo_outputs/         # Generated output artifacts (Payslips, Summaries)
 ```
 
-Output lands in `out/2026-08/`:
+## 🔒 Security & Data Privacy
 
-| File | What it is |
-|---|---|
-| `payslips.html` | One page per employee. Open in a browser, Cmd/Ctrl+P → Save as PDF. |
-| `payslips.pdf` | Same thing, pre-rendered, if weasyprint is installed. |
-| `payroll_summary.xlsx` | Full working: per-day rate, OT rate, payable days, gross, net. |
-| `review_flags.txt` | Everything the engine wants a human to look at before you pay. |
+- **Local First:** If `SUPABASE_KEY` is not provided, the application defaults to saving all state, invoices, and employee configurations locally in the `data/` folder.
+- **Strict Row-Level Security:** The `supabase_schema.sql` configures Supabase with Row Level Security (RLS) turned ON and no anonymous access policies. The publishable key cannot read this data.
+- **Ephemeral Computing:** When deployed to Vercel, the engine stores zero persistent data on the server instances, seamlessly bridging all state to your connected Supabase.
 
-Add `--strict` to make the run exit non-zero if any flag is raised. Useful if you
-ever wire this into a scheduled job.
-
-## Every month, you do three things
-
-1. **Update the timesheet workbook** as you already do — one tab per employee,
-   column C is the day Type, column J is Approved OT hours.
-2. **Run the command above** with the new month.
-3. **Read `review_flags.txt`** and decide on anything listed. Then send the payslips.
-
-That's it. Working days, weekly offs, and public holidays are computed from
-`config/calendar_2026.json` automatically. September will correctly come out at 21
-working days without you touching anything.
-
-## The bug this exists to prevent
-
-Your previous software computed:
-
-```
-per_day = basic / days_present        # 21,000 / 15 = 1,400  → OT rate 350
-```
-
-It must be:
-
-```
-per_day = basic / working_days        # 21,000 / 20 = 1,050  → OT rate 262.50
-```
-
-`working_days` is a **month constant** — the same number for every employee, derived
-only from the company calendar. `engine.run_payroll()` raises `PayrollError` and
-halts the entire run if two employees in one month ever receive different divisors.
-`test_engine.py` asserts the Sandeep golden case explicitly: OT rate must be 262.50,
-never 350.00; net must be 33,283.75, never 35,375.00.
-
-Run the tests any time you change a rule:
-
-```bash
-python3 test_engine.py      # 41 checks on the payroll engine
-python3 test_supabase.py    # 22 checks on the database layer
-```
-
-Both exit non-zero on any failure. `test_supabase.py` runs a stand-in Supabase
-server on localhost, so it verifies the insert, update, delete, file upload,
-download and payroll-archive paths without touching your real project.
-
-## Configuration
-
-Everything editable lives in `config/`. No rates are hardcoded in the Python.
-
-### `rules.json`
-
-- `ctc_split` — the 70/20/10 split and the 50% incentive payout.
-- `overtime.multiplier` — currently `2.0`. Change once, applies everywhere.
-- `overtime.rounding` — `none` (default) or `floor_30min`. Never rounds up.
-- `professional_tax_gujarat` — the slab table.
-- `pay_factors` — every day type, its pay factor, and whether it counts toward
-  working days. **Adding a new day type?** Add it here. The engine refuses to
-  guess a factor for an unknown type; it raises an error instead of silently
-  paying 100%.
-- `exit_policy` — whether allowance and incentive pro-rate on a mid-month exit.
-
-### `calendar_2026.json`
-
-Straight from your Holiday & Leave Calendar 2026. Note the engine follows Section C:
-a holiday landing on a Saturday or Sunday gets no compensatory day, so it is **not**
-subtracted twice. Independence Day 2026 falls on a Saturday, which is why August has
-20 working days and not 19.
-
-For 2027, copy this file to `calendar_2027.json` and update the dates.
-
-### `employees.json`
-
-The master. CTC, PAN, bank details, designation, joining date. The timesheet has no
-salary data in it, so this file is where CTC lives.
-
-- `aliases` — handles spelling drift. The August tab says "Prashant Songagra" while
-  his payslip says "Songara"; the alias catches it.
-- `exit_date` — set it and allowance + incentive pro-rate automatically.
-- `leave_opening` — CL/SL/EL balances at the start of the month, for the payslip's
-  leave table.
-
-If an employee tab has no master entry, the run **stops**. It will not invent a CTC.
-
-## Review flags
-
-These never block payment. They print to console and to `review_flags.txt`.
-
-| Code | Means |
-|---|---|
-| `OT_ON_UNPAID_DAY` | Approved OT on an LWP or Absent day — 0% base but paid overtime. |
-| `OT_WITHOUT_CLOCK_TRAIL` | Approved OT with no check-in and no check-out. |
-| `OT_EXCEEDS_DEVICE_LOG` | Approved OT is higher than what the machine logged. |
-| `TYPE_CONTRADICTS_CLOCK` | Punches recorded on a Week Off or leave day. |
-| `MISSING_PUNCH` | An Office day missing a punch. |
-| `OT_RATIO_HIGH` | OT exceeds 30% of base earned for that person. |
-| `DUPLICATE_DATE` | Same date twice in one tab. |
-| `PAYABLE_EXCEEDS_WORKING` | Payable days > working days. Something is misclassified. |
-| `WORKING_DAYS_MISMATCH` | **Halts the run.** The divisor bug. |
-
-## Overnight shifts
-
-The timesheet stores bare times, so a shift running 19:12 → 00:30 has a checkout
-numerically smaller than the check-in. `timesheet.py` detects this and rolls the
-checkout to the next day before anything else reads it. Without that, the day looks
-like an 18-hour early departure and real overtime disappears.
-
-Long term, store check-out as a full date+time in the workbook.
-
-## Adding an employee
-
-Add a tab to the timesheet, add an entry to `config/employees.json`. Nothing else.
-
-## Files
-
-```
-payroll/
-├── app.py                web app — start here
-├── static/index.html     the interface
-├── run_payroll.py        command-line version
-├── finance.py            expenses + invoice storage (SQLite or Supabase)
-├── engine.py             calculation — the divisor assertion lives here
-├── timesheet.py          workbook reader, overnight-shift fix
-├── payslip.py            HTML/PDF payslip rendering
-├── test_engine.py        41 payroll checks
-├── test_supabase.py      22 database checks (uses a local stand-in)
-├── setup.sh / setup.bat  one-time install
-├── config/
-│   ├── rules.json        rates, pay factors, PT slabs
-│   ├── supabase_schema.sql  run this in Supabase first
-│   ├── secrets.sample.json  copy to secrets.json to connect Supabase
-│   ├── calendar_2026.json holidays and work week
-│   └── employees.json    CTC and employee master
-├── assets/               Genartml logo
-└── data/                 local database + invoice files (back this up)
-```
+---
+*Built for Genartml Pvt. Ltd.*
